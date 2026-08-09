@@ -27,6 +27,9 @@ Eventix permet aux organisateurs de se concentrer sur la réussite de leurs év�
 
 ---
 
+
+
+
 ## Principes directeurs
 
 Toutes les décisions concernant Eventix devront respecter les principes suivants :
@@ -46,3 +49,26 @@ Notre ambition est qu'Eventix devienne un acteur incontournable de l'événement
 À terme, organiser un événement sans Eventix devra sembler aussi inhabituel qu'organiser une réunion professionnelle sans outil collaboratif.
 
 Eventix ne sera pas uniquement une plateforme de billetterie, mais une plateforme complète de gestion et d'expérience événementielle.
+
+```text
+Conception
+    ↓
+Organisation
+    ↓
+Commercialisation
+    ↓
+Vente
+    ↓
+Paiement
+    ↓
+Billetterie
+    ↓
+Contrôle d'accès
+    ↓
+Expérience événementielle
+    ↓
+Suivi
+    ↓
+Clôture
+```
+
