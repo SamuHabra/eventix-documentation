@@ -73,6 +73,7 @@ De nouveaux personas pourront également être créés si des différences impor
 L'équipe doit éviter de créer plusieurs personas uniquement pour représenter des différences superficielles.
 
 Un nouveau persona doit correspondre à un comportement ou à des besoins suffisamment différents pour avoir un impact sur la conception du produit.
+
 # 6. Persona : Prestataire
 
 ## Profil
