@@ -1,10 +1,6 @@
 # Dépendances fichier-à-fichier — Documentation Eventix
 
-> Ce document remplace la logique "dépend de la section X" par une dépendance **précise, fichier par fichier**, avec liens cliquables (chemins relatifs à placer dans `docs/`, au même niveau que les 19 dossiers de section).
->
-> Pour chaque fichier : de quel(s) fichier(s) précis il dépend, et pourquoi. Le `README.md` de chaque section dépend par nature de tous les fichiers de sa section (non re-détaillé ligne par ligne à chaque fois).
 
----
 
 ## 01 — Organisation du projet
 
