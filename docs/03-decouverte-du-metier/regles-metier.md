@@ -732,6 +732,26 @@ Pas de vente offline
 
 La complexité distribuée sera introduite ultérieurement si le besoin métier le justifie.
 
+
+
+
+
+
+Règle métier
+Plusieurs scanners peuvent fonctionner lorsque leur état est partagé et synchronisé de manière fiable.
+Si cette synchronisation devient indisponible, Eventix bascule vers un mode mono-scanner.
+Un seul scanner est alors autorisé à effectuer les validations.
+Les autres scanners doivent attendre le rétablissement d'une synchronisation fiable.
+Les contrôles effectués pendant le mode dégradé sont synchronisés avec Eventix lorsque la connectivité est rétablie.
+Pourquoi ce choix ?
+
+Le trade-off est volontaire :
+
+Mode	Rapidité	Fiabilité
+Plusieurs scanners synchronisés	🟢 élevée	🟢 élevée
+Un seul scanner	🟠 réduite	🟢 très élevée
+Plusieurs scanners indépendants hors ligne	🟢 élevée	🔴 insuffisante
+
 ---
 
 # 16. Statut du document
