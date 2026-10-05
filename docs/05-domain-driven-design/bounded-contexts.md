@@ -519,8 +519,14 @@ Les trois sous-domaines de COMMUNICATION partagent le même langage (mise à dis
 
 
 
- 9. Contextes partagés et partenariats
-9.1. Contexte partagé : Événement
+```
+
+---
+
+# 9. Contextes partagés et partenariats
+
+## 9.1. Contexte partagé : Événement
+
 Le concept d'événement est partagé entre plusieurs bounded contexts. Chaque contexte possède une vue différente du même événement :
 
 | Contexte | Vue de l'événement                                                          |
@@ -531,81 +537,106 @@ Le concept d'événement est partagé entre plusieurs bounded contexts. Chaque c
 | BC-07    | Événement contrôlé avec points d'entrée                                     |
 | BC-11    | Événement source de statistiques et d'historique                            |
 
-9. Contextes partagés et partenariats
-9.1. Contexte partagé : Événement
-Le concept d'événement est partagé entre plusieurs bounded contexts. Chaque contexte possède une vue différente du même événement :
-Table
-Contexte	Vue de l'événement
-BC-02	Événement complet avec configuration, espaces, catégories et cycle de vie
-BC-03	Événement publié avec informations de consultation et disponibilité visible
-BC-06	Événement associé à un billet émis
-BC-07	Événement contrôlé avec points d'entrée
-BC-11	Événement source de statistiques et d'historique
 Cette multiplicité de vues est légitime en DDD : chaque contexte possède son propre modèle de l'événement, adapté à ses besoins. La cohérence est assurée par les événements métier émis par BC-02.
-9.2. Contexte partagé : Billet
+
+## 9.2. Contexte partagé : Billet
+
 Le concept de billet est partagé entre plusieurs bounded contexts :
-Table
-Contexte	Vue du billet
-BC-06	Billet émis avec propriétaire actif unique et QR Code
-BC-07	Billet à contrôler avec état de validation
-BC-12	Billet à distribuer au participant
-9.3. Partenariats
-Table
-Partenariat	Nature	Justification
-BC-02 ↔ BC-10	BC-10 fournit des décisions de sécurité à BC-02	Les mesures de sécurité portent sur les événements sans en faire partie
-BC-05 ↔ BC-09	BC-05 déclenche des remboursements vers BC-09	La réconciliation des paiements tardifs peut aboutir à un remboursement
-BC-07 ↔ BC-11	BC-07 fournit les événements de présence à BC-11	Les statistiques d'entrée alimentent l'analyse
-BC-06 ↔ BC-12	BC-06 fournit les billets à BC-12	La distribution est une conséquence de l'émission
-10. Alignement avec le core domain
-10.1. Bounded contexts cœur
+
+| Contexte | Vue du billet |
+|---|---|
+| BC-06 | Billet émis avec propriétaire actif unique et QR Code |
+| BC-07 | Billet à contrôler avec état de validation |
+| BC-12 | Billet à distribuer au participant |
+
+## 9.3. Partenariats
+
+| Partenariat | Nature | Justification |
+|---|---|---|
+| BC-02 ↔ BC-10 | BC-10 fournit des décisions de sécurité à BC-02 | Les mesures de sécurité portent sur les événements sans en faire partie |
+| BC-05 ↔ BC-09 | BC-05 déclenche des remboursements vers BC-09 | La réconciliation des paiements tardifs peut aboutir à un remboursement |
+| BC-07 ↔ BC-11 | BC-07 fournit les événements de présence à BC-11 | Les statistiques d'entrée alimentent l'analyse |
+| BC-06 ↔ BC-12 | BC-06 fournit les billets à BC-12 | La distribution est une conséquence de l'émission |
+
+---
+
+# 10. Alignement avec le core domain
+
+## 10.1. Bounded contexts cœur
+
 Cinq bounded contexts sont classés cœur :
-Table
-Bounded Context	Sous-domaines cœur	Promesses associées
-BC-02	SD-02-1, SD-02-2, SD-02-3	Gestion — « mieux gérer leurs événements »
-BC-03	SD-03-2, SD-03-3	Découverte — recherche selon intérêts et localisation
-BC-06	SD-06-1, SD-06-2	Billetterie — obtention simple des billets
-BC-07	SD-07-2, SD-07-3, SD-07-4	Accès — contrôle des accès et continuité locale
-BC-11	SD-11-2	Analyse — « mieux comprendre leurs événements »
-10.2. Sous-domaines cœur local
+
+| Bounded Context | Sous-domaines cœur | Promesses associées |
+|---|---|---|
+| BC-02 | SD-02-1, SD-02-2, SD-02-3 | Gestion — « mieux gérer leurs événements » |
+| BC-03 | SD-03-2, SD-03-3 | Découverte — recherche selon intérêts et localisation |
+| BC-06 | SD-06-1, SD-06-2 | Billetterie — obtention simple des billets |
+| BC-07 | SD-07-2, SD-07-3, SD-07-4 | Accès — contrôle des accès et continuité locale |
+| BC-11 | SD-11-2 | Analyse — « mieux comprendre leurs événements » |
+
+## 10.2. Sous-domaines cœur local
+
 Trois sous-domaines sont classés cœur local par inférence du contexte camerounais :
-Table
-Sous-domaine	Bounded Context	Justification locale
-SD-05-4	BC-05	Réconciliation des paiements tardifs — réalité du marché camerounais
-SD-07-3	BC-07	Mode dégradé — contraintes de connectivité locales
-SD-07-4	BC-07	Réintégration après resynchronisation — cohérence retrouvée
+
+| Sous-domaine | Bounded Context | Justification locale |
+|---|---|---|
+| SD-05-4 | BC-05 | Réconciliation des paiements tardifs — réalité du marché camerounais |
+| SD-07-3 | BC-07 | Mode dégradé — contraintes de connectivité locales |
+| SD-07-4 | BC-07 | Réintégration après resynchronisation — cohérence retrouvée |
+
 Ces sous-domaines sont intégrés dans des bounded contexts génériques ou cœur sans créer de contexte dédié. Cette intégration est justifiée par leur étroite relation avec les responsabilités métier de leur contexte d'accueil.
-11. Ce que les bounded contexts ne préjugent pas
+
+---
+
+# 11. Ce que les bounded contexts ne préjugent pas
+
 La délimitation des bounded contexts ne préjuge pas :
-de l'architecture technique (monolithe, microservices, etc.) ;
-des technologies de développement ;
-des bases de données ;
-des frameworks ;
-des API ;
-de l'infrastructure ;
-des mécanismes de déploiement.
+
+- de l'architecture technique (monolithe, microservices, etc.) ;
+- des technologies de développement ;
+- des bases de données ;
+- des frameworks ;
+- des API ;
+- de l'infrastructure ;
+- des mécanismes de déploiement.
+
 Un bounded context peut être implémenté comme un module dans un monolithe, comme un microservice, ou comme une combinaison des deux. Cette décision relève des phases ultérieures.
-12. Résumé
+
+---
+
+# 12. Résumé
+
 Ce document délimite douze bounded contexts qui regroupent les trente-six sous-domaines d'Eventix. Cinq bounded contexts sont classés cœur, trois sont classés soutien, et quatre sont classés génériques. Les frontières suivent la cohérence métier, le cycle de vie et le niveau de différenciation. Les relations entre contextes sont explicites et minimales. Aucune décision technique n'est prise ou implicite.
-13. Critères de qualité du document
+
+---
+
+# 13. Critères de qualité du document
+
 Ce document doit respecter les propriétés suivantes :
-chaque bounded context possède une frontière logique clairement délimitée ;
-les sous-domaines inclus dans chaque contexte sont explicitement listés ;
-les relations avec les contextes voisins sont explicites ;
-l'alignement avec la classification cœur / soutien / générique est vérifiable ;
-aucune décision technique n'est prise ou implicite.
-14. Statut
-Table
-Champ	Valeur
-Document	bounded-contexts.md
-Version	1.0
-Statut	À valider par l'équipe
-Périmètre	MVP Eventix
-Marché	Cameroun
-Table
-Principe	État
-Frontière logique par cohérence métier	✅ APPLIQUÉ
-Frontière par cycle de vie	✅ APPLIQUÉ
-Frontière par niveau de différenciation	✅ APPLIQUÉ
-Relations explicites entre contextes	✅ DÉFINIES
-Alignement avec le core domain	✅ VÉRIFIÉ
-Décisions techniques	⏳ NON PRÉJUGÉES
+
+- chaque bounded context possède une frontière logique clairement délimitée ;
+- les sous-domaines inclus dans chaque contexte sont explicitement listés ;
+- les relations avec les contextes voisins sont explicites ;
+- l'alignement avec la classification cœur / soutien / générique est vérifiable ;
+- aucune décision technique n'est prise ou implicite.
+
+---
+
+# 14. Statut
+
+| Champ | Valeur |
+|---|---|
+| **Document** | `bounded-contexts.md` |
+| **Version** | 1.0 |
+| **Statut** | À valider par l'équipe |
+| **Périmètre** | MVP Eventix |
+| **Marché** | Cameroun |
+
+| Principe | État |
+|---|---|
+| Frontière logique par cohérence métier | ✅ APPLIQUÉ |
+| Frontière par cycle de vie | ✅ APPLIQUÉ |
+| Frontière par niveau de différenciation | ✅ APPLIQUÉ |
+| Relations explicites entre contextes | ✅ DÉFINIES |
+| Alignement avec le core domain | ✅ VÉRIFIÉ |
+| Décisions techniques | ⏳ NON PRÉJUGÉES |
