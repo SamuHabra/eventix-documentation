@@ -181,7 +181,7 @@ Ce contexte englobe tout ce qui concerne la finalisation des achats, l'émission
 
 ### Relations avec les contextes voisins
 
-- **Reçoit de** : BC-05 (paiement confirmé), BC-02 (événement et catégorie).
+- **Reçoit de** : BC-05 (paiement confirmé), BC-02 (événement et catégorie), BC-07 (statut des billets utilisés).
 - **Fournit à** : BC-07 (billets à contrôler), BC-12 (billets à distribuer), Participant (billets consultables).
 
 ### Justification de la frontière
@@ -213,7 +213,7 @@ Ce contexte englobe tout ce qui concerne le contrôle des billets à l'entrée d
 ### Relations avec les contextes voisins
 
 - **Reçoit de** : BC-06 (billets émis), BC-02 (événement et points d'entrée).
-- **Fournit à** : BC-11 (événements de présence), BC-02 (statut des billets utilisés).
+- **Fournit à** : BC-11 (événements de présence), BC-06 (statut des billets utilisés).
 
 ### Justification de la frontière
 

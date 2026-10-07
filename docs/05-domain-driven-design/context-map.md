@@ -211,6 +211,7 @@ Rôle dans la carte : BC-05 est un contexte générique qui traite les opératio
 |---|---|---|---|---|
 | BC-05 → BC-06 | Événement Publié | Entrante | Paiement confirmé | TICKETING émet le billet sur confirmation du paiement |
 | BC-02 → BC-06 | Client-Fournisseur | Entrante | Événement et catégorie | TICKETING émet des billets pour des événements CATALOG |
+| BC-07 → BC-06 | Événement Publié | Entrante | Statut des billets utilisés | Le billet apprend du contrôle qu'il a été utilisé |
 | BC-06 → BC-07 | Client-Fournisseur | Sortante | Billets émis | ACCESS contrôle les billets émis par TICKETING |
 | BC-06 → BC-12 | Client-Fournisseur | Sortante | Billets à distribuer | COMMUNICATION distribue les billets émis |
 | BC-06 → PARTICIPANT | Service Hébergé | Sortante | Billets consultables | Le participant consulte ses billets depuis son compte |
@@ -224,7 +225,7 @@ Rôle dans la carte : BC-06 est le cœur de la promesse billetterie. Il consolid
 | BC-06 → BC-07 | Client-Fournisseur | Entrante | Billets émis | ACCESS contrôle les billets émis par TICKETING |
 | BC-02 → BC-07 | Client-Fournisseur | Entrante | Événement et points d'entrée | ACCESS contrôle l'entrée d'événements CATALOG |
 | BC-07 → BC-11 | Événement Publié | Sortante | Présence enregistrée | ANALYTICS agrège les données de présence |
-| BC-07 → BC-02 | Événement Publié | Sortante | Statut des billets utilisés | CATALOG connaît l'état d'utilisation de ses billets |
+| BC-07 → BC-06 | Événement Publié | Sortante | Statut des billets utilisés | TICKETING met à jour l'état de ses billets contrôlés |
 
 Rôle dans la carte : BC-07 est le cœur de la promesse de contrôle d'accès. Il opère dans un environnement contraint (connectivité variable) et publie des événements de présence.
 
@@ -350,7 +351,7 @@ Ce flux traverse quatre bounded contexts et illustre la gestion des cas particul
 
 - **Nature :** BC-07 modifie l'état des billets (USED) qui appartiennent à BC-06, tout en dépendant de BC-02 pour les points d'entrée.
 - **Risque :** Divergence entre l'état du billet dans BC-06 et son statut d'utilisation dans BC-07.
-- **Mitigation :** BC-07 publie des événements de présence que BC-06 consomme pour mettre à jour l'état de ses billets. La source de vérité reste BC-07 pour la validation, BC-06 pour l'émission.
+- **Mitigation (actée par arbitrage du 07/10/2026) :** la relation « statut des billets utilisés » est dirigée BC-07 → BC-06 (§6.6) : BC-07 publie les faits d'utilisation que BC-06 consomme pour mettre à jour l'état de ses billets. La source de vérité reste BC-07 pour la validation, BC-06 pour l'état du billet.
 
 ## 8.2. Friction 2 : Cohérence entre BC-04 et BC-05
 
