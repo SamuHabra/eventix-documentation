@@ -53,7 +53,7 @@ Une responsabilité est dite **claire** lorsque quatre conditions sont réunies 
 
 | Élément | Origine | Traitement ici |
 |---|---|---|
-| 12 modules `MOD-nn`, agrégats possédés, contrats publiés et requis | `modules.md` §6–7 | Repris sans modification |
+| 13 modules `MOD-nn`, agrégats possédés, contrats publiés et requis | `modules.md` §6–7 | Les douze modules historiques sont conservés ; MOD-13 porte la supervision cybersécurité |
 | Règles de modularité R1 à R8 | `modules.md` §4 | Opposables : toute attribution les respecte |
 | Arbitrage `StatutBilletUtilisé` : MOD-07 → MOD-06 | `modules.md` §13.1 | Pris comme acquis |
 | 10 services de domaine, leurs agrégats, règles et ordres de coordination | `services-de-domaine.md` §5–6 | Repris et **rattachés à un module hôte** (§5) |
@@ -107,6 +107,7 @@ Une responsabilité est dite **claire** lorsque quatre conditions sont réunies 
 | `MOD-10` trust-safety | Dire **si un signalement justifie une mesure**, et laquelle | Niveau de risque, mesure de sécurité, proportionnalité | Décision de sécurité |
 | `MOD-11` analytics-observability | **Se souvenir et compter**, sans jamais décider | Aucune décision métier | Rien (consommateur, jamais source de vérité) |
 | `MOD-12` communication | **Faire parvenir** l'information au participant par un canal | Choix du canal et de la forme de livraison, jamais *s'il faut* informer | Distribution et notification |
+| `MOD-13` cybersecurity-operations | **Détecter, qualifier et tracer** les incidents cyber, avec décision humaine | Qualification cyber et décision de réponse autorisée | Alerte, incident et décision de réponse cyber |
 
 Les quatre arbitres d'EF-128 (configuration, attribution, billet, validation) figurent dans la dernière colonne : MOD-02, MOD-04, MOD-06, MOD-07.
 
@@ -369,6 +370,17 @@ Chaque fiche reprend les agrégats, contrats et exigences de `modules.md` §7 et
 | **Ne fait pas** | Décider d'annuler ou de reporter (MOD-02) · émettre un billet (MOD-06) · connaître les règles métier derrière une notification |
 | **Raison unique de changer** | Les canaux et la forme des messages |
 
+### 6.13. `MOD-13` — cybersecurity-operations
+
+| Champ | Valeur |
+|---|---|
+| **Raison d'être** | Recevoir les signaux autorisés, gérer les alertes/incidents cyber et tracer les réponses décidées par des humains habilités |
+| **Décide** | Qualification cyber et consignation d'une décision de réponse humaine autorisée |
+| **Garantit** | Une alerte n'est pas une preuve ; aucune mesure n'est déclenchée automatiquement ; toute décision et tout résultat sont traçables |
+| **Héberge** | Gestion des alertes et incidents cyber ; tableau de bord de supervision |
+| **Ne fait pas** | Décider une sanction Trust & Safety (MOD-10) · modifier les données d'un autre module · servir de journal analytique (MOD-11) · traiter un paiement, remboursement ou retrait (MOD-05/09/08) |
+| **Raison unique de changer** | Sources et règles de signalement, qualification et suivi de réponse cybersécurité |
+
 ---
 
 ## 7. Qui décide quoi
@@ -396,6 +408,8 @@ Tableau de tranchage : pour une question métier donnée, un seul module répond
 | Ce compte ou cette organisation est-il banni ? | MOD-10 décide ; **MOD-01 applique** | |
 | Par quel canal informer ? | MOD-12 | — |
 | Cette statistique est-elle fiable ? | MOD-11 | Aucune décision métier n'en dépend (R5) |
+| Ce signal constitue-t-il un incident cyber, quelle est sa qualification ? | MOD-13, avec qualification humaine | MOD-10 ne confirme pas d'intrusion ; MOD-11 ne prend pas de décision |
+| Quelle réponse cyber est autorisée ? | Responsable humain habilité, enregistrée par MOD-13 | Le module propriétaire applique ou refuse sa transition |
 
 ---
 
@@ -570,7 +584,7 @@ Les questions de `modules.md` C2 à C10 restent ouvertes. Celles qui suivent son
 
 | Élément | État |
 |---|---|
-| Responsabilité en une phrase par module | ✅ 12/12 |
+| Responsabilité en une phrase par module | ✅ 13/13 |
 | Un décideur par décision | ✅ Table §7, frontières §8 |
 | Services de domaine attribués | ✅ 10/10, un hôte chacun |
 | Flux manquants résolus (G1, G2, G4) | ⚠️ Candidats, à valider dans `interfaces.md` |

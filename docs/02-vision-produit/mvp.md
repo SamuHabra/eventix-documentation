@@ -82,8 +82,25 @@ L'organisateur peut :
 
 - Définir les types de billets.
 - Définir les prix.
+- Proposer pour un même événement des billets d'accès sur place et des billets d'accès à un direct ou à un contenu VOD.
+- Créer des codes promotionnels et des liens de suivi pour ses partenaires ou influenceurs.
+- Configurer un plan de salle interactif pour les événements à places numérotées.
+- Configurer des passes valables sur plusieurs jours, avec un nombre maximal d'entrées.
+- Activer les dons optionnels et définir des montants suggérés.
 - Suivre les ventes.
 - Consulter les billets vendus et disponibles.
+
+Lorsqu'un billet comprend un accès en ligne, Eventix communique au participant autorisé les informations nécessaires pour accéder au direct ou à la VOD. L'hébergement et la diffusion vidéo ne sont pas présumés fournis par Eventix ; le prestataire et le mécanisme technique restent à définir.
+
+Les codes promotionnels appliquent les réductions configurées par l'organisateur. Les liens de suivi identifient la source d'une vente réalisée par leur intermédiaire ; ils ne constituent pas eux-mêmes un code de réduction. Les ventes finalisées et leur chiffre d'affaires sont consultables par code ou lien.
+
+Pour les événements à places numérotées, le participant peut consulter le plan interactif, choisir une place disponible et la réserver pendant le parcours d'achat. La place doit être attribuée au plus à une commande finalisée.
+
+Un pass consomme une entrée à chaque scan d'entrée accepté. La sortie n'est pas scannée ; chaque nouvelle entrée validée consomme donc une entrée supplémentaire. Les scans refusés ne consomment pas d'entrée.
+
+Le participant peut ajouter un don facultatif au paiement d'un billet payant ou gratuit, en choisissant un montant suggéré par l'organisateur ou en saisissant un montant libre. Un don sur un billet gratuit nécessite un paiement. Sans don, le participant ne règle rien et le parcours gratuit actuel est conservé.
+
+Le don est enregistré séparément du prix du billet. Il ne crée pas de billet supplémentaire et ne consomme pas de disponibilité.
 
 ---
 
@@ -106,12 +123,24 @@ Le MVP permet :
 - La validation d'un billet.
 - Le suivi des billets utilisés.
 - La prévention de la réutilisation d'un billet déjà validé.
+- Le contrôle des entrées restantes d'un pass multi-jours.
+- L'enregistrement distinct des dons facultatifs.
 
 L'objectif est de fournir une meilleure traçabilité et de réduire les risques de fraude.
 
 ---
 
-### 3.7. Statistiques
+### 3.7. Supervision de la cybersécurité Eventix
+
+Le MVP comprend un service interne de supervision cybersécurité distinct de la sécurité métier et du traitement des signalements liés aux événements. Il permet aux personnes habilitées de consulter un tableau de bord d'alertes, d'examiner les éléments disponibles, de qualifier un incident et de tracer la décision humaine prise.
+
+Une alerte constitue un signal à examiner, pas la preuve qu'une attaque a abouti. Le tableau de bord présente les limites et la couverture des sources de détection connues. Aucune mesure de confinement, suspension, sanction, invalidation de billet ou blocage de fonds n'est déclenchée automatiquement par une alerte dans le MVP ; la décision revient à un responsable humain habilité.
+
+Le périmètre fonctionnel détaillé est défini dans [`13-securite/supervision-cybersecurite.md`](../13-securite/supervision-cybersecurite.md). Son propriétaire logique est le contexte BC-13 / module MOD-13 ; les contrats, sources et mécanismes d'intégration restent à spécifier dans les phases d'architecture.
+
+---
+
+### 3.8. Statistiques
 
 Le MVP fournit à l'organisateur des informations permettant de suivre la performance de son événement, notamment :
 
@@ -123,6 +152,7 @@ Le MVP fournit à l'organisateur des informations permettant de suivre la perfor
 - Nombre de billets utilisés.
 - Nombre de billets non utilisés.
 - Répartition des ventes selon les catégories de billets.
+- Montants des dons reçus, présentés séparément des ventes de billets.
 
 Les statistiques constituent une première base d'aide à la décision pour les organisateurs.
 
@@ -160,6 +190,7 @@ Les fonctionnalités suivantes ne font pas partie du MVP :
 - Reels et contenus vidéo courts.
 - Marketplace de prestataires.
 - Gestion des événements dans les stades à très grande capacité.
+- Abonnements et paiements récurrents.
 - Services logistiques physiques.
 - Comptabilité complète.
 - Gestion complète de la communication externe.
@@ -177,6 +208,8 @@ Les évolutions suivantes sont envisagées à titre indicatif :
 - Découverte.
 - Création et publication.
 - Billetterie numérique.
+- Pass multi-jours à quota d'entrées.
+- Dons optionnels.
 - Paiement intégré.
 - Gestion des participants.
 - Contrôle des accès.

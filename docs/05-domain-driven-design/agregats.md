@@ -177,17 +177,17 @@ Le Catalogue expose des Événements publiés auxquels il se réfère par identi
 
 | Membres | Objets de valeur |
 |---|---|
-| — | Montant de l'achat, Contenu de l'achat |
+| — | Montant total, Montant des billets, Montant du don éventuel, Contenu de l'achat |
 
-**Invariants assurés à la frontière** : la cohérence entre le contenu de l'achat et la réservation associée ; la correspondance entre l'achat et le paiement confirmé.
+**Invariants assurés à la frontière** : la cohérence entre le contenu de l'achat et la réservation associée ; la correspondance entre l'achat et le paiement confirmé ; le montant du don est distinct du montant des billets.
 
 ### Agrégat Billet — racine : Billet (ENT-TICKETING-02)
 
 | Membres | Objets de valeur |
 |---|---|
-| Transfert (ENT-TICKETING-03) | Historique de propriété, QR Code |
+| Transfert (ENT-TICKETING-03) | Historique de propriété, QR Code, dates de validité du pass, quota d'entrées et entrées consommées |
 
-**Invariants assurés à la frontière** : le propriétaire actif unique ; la non-validation d'un billet déjà validé ; la traçabilité des propriétaires successifs.
+**Invariants assurés à la frontière** : le propriétaire actif unique ; le refus d'un billet à entrée unique déjà utilisé ; pour un pass, la consommation d'une entrée par contrôle accepté et le refus lorsque le quota est épuisé ou la date invalide ; la traçabilité des propriétaires successifs.
 
 **Justification** : le Billet survit à son achat (transferts, contrôles, annulations) ; le rattacher à l'Agrégat Achat violerait la règle D4. L'Historique de propriété est reconstruit par les Transferts, membres de la même frontière. L'Agrégat Billet référence l'Événement et l'Achat par identité.
 
@@ -288,6 +288,26 @@ Le Catalogue expose des Événements publiés auxquels il se réfère par identi
 
 ---
 
+## 5.13. BC-13 — Cybersecurity Operations
+
+### Agrégat Alerte cybersécurité — racine : Alerte cybersécurité (ENT-CYBER-02)
+
+| Membres | Objets de valeur |
+|---|---|
+| Signal de sécurité (ENT-CYBER-01), références opaques aux actifs concernés | Provenance, catégorie, sévérité estimée, période de couverture |
+
+**Invariants assurés à la frontière** : une alerte conserve sa provenance et ses liens aux signaux ; sa qualification ne peut pas être présentée comme une attaque confirmée sans décision d'analyse humaine.
+
+### Agrégat Incident cybersécurité — racine : Incident cybersécurité (ENT-CYBER-03)
+
+| Membres | Objets de valeur |
+|---|---|
+| Décisions de réponse cyber (ENT-CYBER-04), références opaques aux alertes et actifs | Qualification, justification, autorité, résultat |
+
+**Invariants assurés à la frontière** : toute qualification et décision sont attribuées à un acteur habilité et horodatées ; une alerte seule ne déclenche pas de mesure ; une décision ne modifie jamais directement l'état d'un agrégat détenu par un autre contexte.
+
+**Références externes** : les identifiants de comptes, événements, billets ou transactions sont opaques et référencés par identité. Les données de l'actif restent la propriété de leur contexte source.
+
 # 6. Invariants assurés par les frontières
 
 Le tableau croise les invariants portés par les entités avec les agrégats qui les garantissent. Les invariants sont énoncés dans `entites.md` et ne sont pas repris.
@@ -304,6 +324,7 @@ Le tableau croise les invariants portés par les entités avec les agrégats qui
 | Non-réduction des capacités sous les billets attribués | Agrégat Événement | Agrégat Disponibilité (billets déjà attribués, par identité) |
 | Non-réécriture de l'historique | Agrégat Événement (Historique de configuration), Agrégat Historique | — |
 | Neutralité des statistiques | Agrégat Statistique (absence de référence sortante) | — |
+| Qualification et réponse cyber tracées | Agrégat Incident cybersécurité | Alerte cybersécurité ; propriétaire de l'actif par contrat |
 
 **Note de cohérence** : l'invariant de non-réduction des capacités croise deux agrégats. La frontière de l'Agrégat Événement garantit la règle pour toute modification de configuration ; la lecture des billets déjà attribués se fait par identité depuis l'Agrégat Disponibilité. Le traitement est séquentiel : aucune modification de capacité ne se décide sans cette lecture.
 
@@ -334,12 +355,14 @@ Les références sortantes de chaque agrégat, toujours par identité conformém
 | Statistique | Tous (sources agrégées) |
 | Distribution | Billet |
 | Notification | Événement |
+| Alerte cybersécurité | Signaux de sécurité et références aux actifs |
+| Incident cybersécurité | Alertes cybersécurité |
 
 ---
 
 # 8. Résumé
 
-Ce document regroupe les trente-quatre entités et les objets de valeur d'Eventix en seize agrégats répartis dans les douze bounded contexts. Chaque frontière est justifiée par un invariant à garantir ou par un cycle de vie partagé, conformément aux règles de découpage D1 à D5. Les agrégats se référencent exclusivement par identité. Ce document constitue la base pour la définition des événements métier et des politiques de cohérence dans les phases ultérieures.
+Ce document définit **22 agrégats** répartis dans les treize bounded contexts d'Eventix, dont les deux agrégats de cybersécurité de BC-13. Chaque frontière est justifiée par un invariant à garantir ou par un cycle de vie partagé, conformément aux règles de découpage D1 à D5. Les agrégats se référencent exclusivement par identité. Ce document constitue la base pour la définition des événements métier et des politiques de cohérence dans les phases ultérieures.
 
 ---
 

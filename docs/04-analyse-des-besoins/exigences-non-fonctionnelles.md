@@ -39,6 +39,7 @@ Les exigences de ce document sont dérivées de :
 - `03-decouverte-du-metier/regles-metier.md`
 - `03-decouverte-du-metier/processus-metier.md`
 - `03-decouverte-du-metier/questions-metier-ouvertes.md`
+- `03-decouverte-du-metier/cybersecurite-eventix/README.md` — enjeux, actifs, impacts et gouvernance à confirmer pour la cybersécurité du système.
 - `04-analyse-des-besoins/exigences-fonctionnelles.md`
 
 ---
@@ -260,6 +261,9 @@ Une dégradation de connectivité ne doit pas conduire Eventix à accepter des c
 Le système doit privilégier une dégradation contrôlée à un fonctionnement rapide mais incohérent.
 
 8. Sécurité
+
+Les exigences ci-dessous sont alimentées à la fois par les règles de confiance métier et par la découverte des enjeux de cybersécurité du système. La vérification d'un organisateur, la proportionnalité d'une mesure contre la fraude et la protection technique contre une compromission sont des responsabilités distinctes ; leur traçabilité ne doit pas les confondre. Les questions de gouvernance et de criticité encore ouvertes figurent en QMO-053 à QMO-056.
+
 ENF-016 — Protection des comptes
 
 Priorité : CRITICAL

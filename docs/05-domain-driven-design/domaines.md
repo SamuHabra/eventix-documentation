@@ -1277,7 +1277,7 @@ Cette étape permettra ensuite de revenir sur le **Core Domain** avec beaucoup p
 
 # 1. Objectif
 
-Ce document définit les douze domaines métier d'Eventix identifiés dans la vue d'ensemble du domaine. Pour chaque domaine, il précise :
+Ce document définit les domaines métier d'Eventix identifiés dans la vue d'ensemble du domaine, complétés par le domaine transversal de cybersécurité interne. Pour chaque domaine, il précise :
 
 - la responsabilité principale ;
 - les concepts clés ;
@@ -1319,6 +1319,7 @@ Chaque domaine possède un identifiant unique :
 | `DOM-10` | TRUST & SAFETY |
 | `DOM-11` | OBSERVATION |
 | `DOM-12` | COMMUNICATION |
+| `DOM-13` | CYBERSECURITY OPERATIONS |
 
 ---
 
@@ -1756,6 +1757,27 @@ Chaque domaine possède un identifiant unique :
 
 ---
 
+## 15.5 Domaine transversal — CYBERSECURITY OPERATIONS
+
+| Champ | Valeur |
+|---|---|
+| **Identifiant** | `DOM-13` |
+| **Nom** | CYBERSECURITY OPERATIONS |
+| **Responsabilité** | Superviser les signaux de sécurité du système Eventix, qualifier les incidents et tracer les décisions humaines de réponse |
+| **Catégorie** | Soutien |
+| **MVP** | Oui, EF-145 à EF-147 |
+
+Ce domaine interne ne couvre ni la vérification/fraude événementielle (TRUST & SAFETY), ni les statistiques et l'observabilité métier (OBSERVATION). Il ne détient pas les comptes, événements, billets ou données financières sur lesquels une réponse pourrait porter.
+
+### Sous-domaines et frontières
+
+- `SD-13-1` — Collecte et normalisation des signaux de sécurité.
+- `SD-13-2` — Triage et investigation des alertes/incidents cyber.
+- `SD-13-3` — Décision humaine, suivi et traçabilité de la réponse.
+
+**Dépend de :** événements minimisés des contextes autorisés et habilitations de BC-01.
+**Fournit :** alertes, dossiers d'incident et décisions consignées ; une mesure est exécutée par le propriétaire de l'actif, jamais par écriture directe du domaine cyber.
+
 # 16. Résumé des frontières
 
 | Domaine | Dépend de | Fournit à |
@@ -1772,6 +1794,7 @@ Chaque domaine possède un identifiant unique :
 | TRUST & SAFETY | IDENTITY, CATALOG | CATALOG, IDENTITY |
 | OBSERVATION | Tous les domaines | Organisateur, Eventix |
 | COMMUNICATION | TICKETING, CATALOG | Participant |
+| CYBERSECURITY OPERATIONS | Identité et signaux des contextes autorisés | Modules propriétaires des actifs ; responsables habilités |
 
 ---
 
@@ -1822,4 +1845,3 @@ La granularité retenue est celle du domaine métier. Chaque domaine pourra fair
 ### Questions ouvertes
 
 Les questions métier encore ouvertes identifiées dans les phases précédentes ne sont pas tranchées ici. Elles restent référencées dans `questions-metier-ouvertes.md`.
-

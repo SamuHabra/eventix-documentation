@@ -326,7 +326,7 @@ Durée réservation	5 minutes
 Paiement tardif	Réconciliation
 Transfert de billet	Autorisé gratuitement
 Revente	Hors MVP
-Sièges numérotés	Supportés
+Sièges numérotés	Supportés ; choix interactif et réservation d'une place individuelle dans le périmètre du MVP
 Contrôle	Priorité à la fiabilité
 Fonds organisateur	Disponibles après événement + clôture
 Retrait partiel	Autorisé

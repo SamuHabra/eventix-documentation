@@ -84,6 +84,7 @@ node "Infrastructure Eventix" <<execution environment>> as INFRA {
     [BC-04 Booking & Availability]
     [BC-08 Financial Settlement]
     [BC-09 Refund Management]
+    [BC-13 Cybersecurity Operations]
   }
   package "Générique" #EAEAF2 {
     [BC-01 Identity & Access Management]
@@ -122,6 +123,8 @@ note bottom of DB
 end note
 @enduml
 ```
+
+BC-13 apparaît ici comme capacité logique incluse dans l'environnement Eventix uniquement pour assurer la traçabilité du modèle. Ce diagramme ne décide pas qu'il s'agit d'un service séparé, d'un outil externe ou d'un nœud dédié ; le mode de déploiement doit être arbitré en phases 09–10.
 
 ![Diagramme de déploiement](diagramme-de-deploiement.png)
 

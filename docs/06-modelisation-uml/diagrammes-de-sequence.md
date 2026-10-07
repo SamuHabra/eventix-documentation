@@ -65,7 +65,7 @@ Ce n'est pas une redite : `services-de-domaine.md` interdit explicitement de rep
 
 ## 3. Pourquoi un diagramme par service, pas par cas d'usage
 
-Sur les 26 Use Cases de `diagrammes-de-cas-d-utilisation.md`, la grande majorité (`UC-001` Découvrir, `UC-004` Récupérer un billet, `UC-007` Consulter ses événements, `UC-008` Gérer les prix, `UC-009`/`UC-010` Statistiques, `UC-019` Auditer une décision...) ne concernent qu'**un seul agrégat**. Leur séquence se limite à "l'acteur interroge ou modifie une racine" — un aller-retour trivial qui n'apporte aucune valeur de modélisation à diagrammer individuellement (sur-engineering évité).
+Sur les 37 Use Cases de `diagrammes-de-cas-d-utilisation.md`, la grande majorité (`UC-001` Découvrir, `UC-004` Récupérer un billet, `UC-007` Consulter ses événements, `UC-008` Gérer les prix, `UC-009`/`UC-010` Statistiques, `UC-019` Auditer une décision...) ne concernent qu'**un seul agrégat**. Leur séquence se limite à "l'acteur interroge ou modifie une racine" — un aller-retour trivial qui n'apporte aucune valeur de modélisation à diagrammer individuellement (sur-engineering évité).
 
 Les séquences qui méritent d'être détaillées sont exactement celles où **plusieurs agrégats doivent rester cohérents ensemble** — c'est-à-dire les dix services de domaine. Ce document en fournit donc un diagramme par service (`SEQ-01` à `SEQ-09`, `SEQ-07` en couvrant deux car ils partagent le même contexte BC-07), plus **un contre-exemple** (`SEQ-10`) qui montre à quoi ressemble une opération à agrégat unique, pour que la distinction reste visible plutôt qu'implicite.
 
@@ -153,29 +153,36 @@ participant "Réservation" as RES <<agrégat>>
 participant "Disponibilité" as DISP <<agrégat>>
 participant "Achat" as ACH <<agrégat>>
 participant "Billet" as BIL <<agrégat>>
+participant "Code promotionnel" as PROMO <<entité>>
 
-P -> SVC : Confirmer l'achat (réservation, moyen de paiement)
+P -> SVC : Confirmer l'achat (réservation, code éventuel, moyen de paiement)
+SVC -> PROMO : Vérifier le code et calculer la réduction éventuelle
+PROMO --> SVC : Réduction applicable ou refus du code
 
-alt Événement payant
+SVC -> ACH : Préparer la commande (billet, don et réduction éventuels)
+
+alt Montant total supérieur à zéro
   SVC -> PAY : Initier le paiement
   PAY -> PSP : Demander le paiement
   PSP --> PAY : Confirmation de paiement
   PAY --> SVC : Paiement confirmé
-else Événement gratuit
-  SVC -> PAY : Confirmer un paiement à 0 FCFA (auto-confirmé)
-  PAY --> SVC : Paiement confirmé
+else Billet gratuit sans don
+  SVC -> PAY : Confirmer un paiement à 0 XAF (auto-confirmé en interne)
+  PAY --> SVC : Confirmation interne
 end
 
 SVC -> RES : Confirmer la réservation
 SVC -> DISP : Décrémenter la quantité disponible
-SVC -> ACH : Créer l'achat
+SVC -> ACH : Finaliser l'achat et enregistrer don et réduction séparément
 SVC -> BIL : Émettre le billet
 BIL --> SVC : Billet émis
 SVC --> P : Billet disponible
 
 note over SVC, BIL
-  Réalise UC-002 (billet gratuit), UC-003 (achat payant)
-  et UC-025 (Émettre un billet, <<include>> dans les deux cas).
+  Réalise UC-002 (billet gratuit), UC-003 (achat payant),
+  UC-029 (don), UC-033 (code promotionnel) et UC-025 (émission).
+  Un billet gratuit sans don ne déclenche pas de paiement externe ;
+  tout don positif est inclus au montant total à payer.
   Idempotence garantie par le service (PM44) : une confirmation
   reçue plusieurs fois ne produit qu'un seul enchaînement.
 end note
@@ -310,19 +317,26 @@ participant "Point d'entrée" as PDE <<agrégat>>
 AG -> SVC : Scanner un billet
 SVC -> BIL : Vérifier la validité (événement, état)
 
-alt Billet valide
+alt Billet standard valide
   BIL --> SVC : Billet valide
   SVC -> BIL : Faire passer l'état à USED
   SVC -> PDE : Enregistrer la présence
   SVC --> AG : Accès autorisé
-else Billet invalide (déjà utilisé, annulé, autre événement)
+else Pass valide avec entrées restantes
+  BIL --> SVC : Pass valide, quota restant
+  SVC -> BIL : Consommer une entrée
+  SVC -> PDE : Enregistrer la présence
+  SVC --> AG : Accès autorisé
+else Billet invalide (quota épuisé, hors validité, annulé, autre événement)
   BIL --> SVC : Billet refusé (motif)
   SVC --> AG : Accès refusé (motif)
 end
 note over SVC
   Réalise UC-014 et UC-026 (<<include>>).
-  La décision reste toujours portée par le
-  Billet lui-même — jamais par le Point d'entrée.
+  UC-028 s'applique aux passes : chaque entrée acceptée
+  consomme une unité du quota, sans scan de sortie.
+  Le Billet porte l'état et le quota ; le Point d'entrée
+  n'autorise pas directement la consommation.
 end note
 @enduml
 ```
@@ -467,11 +481,11 @@ end note
 |---|---|---|---|
 | SEQ-01 | ServiceDeVerificationEvenementielle | UC-006, UC-016 | Événement, Organisation, Mesure de sécurité |
 | SEQ-02 | ServiceDExpirationDeReservation | UC-024 | Réservation, Disponibilité |
-| SEQ-03 | ServiceDeFinalisationDAchat | UC-002, UC-003, UC-025 | Paiement, Réservation, Disponibilité, Achat, Billet |
+| SEQ-03 | ServiceDeFinalisationDAchat | UC-002, UC-003, UC-025, UC-029, UC-033 | Code promotionnel, Paiement, Réservation, Disponibilité, Achat, Billet |
 | SEQ-04 | ServiceDeReconciliation | UC-021, UC-025 (extend), UC-020 (extend) | Paiement, Disponibilité, Billet, Obligation de remboursement |
 | SEQ-05 | ServiceDAnnulationDevenement | UC-012, UC-020 (extend) | Événement, Billet (n instances), Obligation de remboursement, Notification |
 | SEQ-06 | ServiceDeReportDevenement | UC-011 | Événement, Notification |
-| SEQ-07a | ServiceDeControleDAcces | UC-014, UC-026 (include) | Billet, Point d'entrée |
+| SEQ-07a | ServiceDeControleDAcces | UC-014, UC-026, UC-028 (include) | Billet, Point d'entrée |
 | SEQ-07b | ServiceDeGestionDuModeDegrade | UC-015 | Point d'entrée (× n scanners) |
 | SEQ-08 | ServiceDeClotureFinanciere | UC-013 (lecture) | Clôture, Solde organisateur |
 | SEQ-09 | ServiceDApplicationDeMesureDeSecurite | UC-018 (extend de UC-017) | Mesure de sécurité, Organisation/Événement/Utilisateur, Notification |

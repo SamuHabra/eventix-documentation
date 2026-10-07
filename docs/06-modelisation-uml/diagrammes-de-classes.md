@@ -25,13 +25,14 @@
 9. [Financial Settlement & Refund (BC-08, BC-09)](#9-financial-settlement--refund-bc-08-bc-09)
 10. [Trust & Safety (BC-10)](#10-trust--safety-bc-10)
 11. [Analytics & Communication (BC-11, BC-12)](#11-analytics--communication-bc-11-bc-12)
-12. [Table des choix de relation](#12-table-des-choix-de-relation)
-13. [Note d'architecture — SOLID et patterns sans POO](#13-note-darchitecture--solid-et-patterns-sans-poo)
-14. [Incohérences détectées dans les sources](#14-incohérences-détectées-dans-les-sources)
-15. [Cas limites et évolutivité](#15-cas-limites-et-évolutivité)
-16. [Hypothèses retenues](#16-hypothèses-retenues)
-17. [Points à clarifier avec le client / product owner](#17-points-à-clarifier-avec-le-client--product-owner)
-18. [Statut](#18-statut)
+12. [Cybersecurity Operations (BC-13)](#12-cybersecurity-operations-bc-13)
+13. [Table des choix de relation](#13-table-des-choix-de-relation)
+14. [Note d'architecture — SOLID et patterns sans POO](#14-note-darchitecture--solid-et-patterns-sans-poo)
+15. [Incohérences détectées dans les sources](#15-incohérences-détectées-dans-les-sources)
+16. [Cas limites et évolutivité](#16-cas-limites-et-évolutivité)
+17. [Hypothèses retenues](#17-hypothèses-retenues)
+18. [Points à clarifier avec le client / product owner](#18-points-à-clarifier-avec-le-client--product-owner)
+19. [Statut](#19-statut)
 
 ---
 
@@ -41,7 +42,7 @@ Vous avez indiqué ne pas vouloir implémenter Eventix en programmation orienté
 
 Concrètement, ce document :
 
-- reprend **fidèlement** les 34 entités de `entites.md`, les objets de valeur de `objets-valeur.md` et les 20 agrégats de `agregats.md` — sans réinterpréter leurs définitions ;
+- reprend les entités de `entites.md`, les objets de valeur de `objets-valeur.md` et les agrégats de `agregats.md`, dont les quatre entités et deux agrégats ajoutés à BC-13 ;
 - **ne montre aucune opération** (pas de méthodes, pas de comportement) — seulement des attributs typés, conformément à votre choix de ne pas utiliser la POO ;
 - **respecte strictement les frontières d'agrégats** déjà tranchées dans `agregats.md`, y compris quand cela contredit une lecture plus naïve des relations de composition de `entites.md` (voir section 14) ;
 - reste **allégé** : les ~30 objets de valeur ne sont pas tous dessinés comme des classes séparées — seuls quelques-uns sont représentés explicitement à titre d'exemple, les autres apparaissent comme attributs typés (voir section 2).
@@ -114,6 +115,12 @@ package "BC-11/12 Observation & Communication" {
   class Historique <<Racine>>
   class Distribution <<Racine>>
   class Notification <<Racine>>
+}
+package "BC-13 Cybersecurity Operations" {
+  class SignalDeSecurite <<Entité>>
+  class AlerteCyber <<Racine>>
+  class IncidentCyber <<Racine>>
+  class DecisionDeReponseCyber <<Entité>>
 }
 
 Organisation ..> Utilisateur : <<par identité>>
@@ -213,6 +220,7 @@ class Evenement <<Racine>> {
   heure : HeureDÉvénement
   capacite : Capacité
   etat : ÉtatÉvénement
+  modesAcces : Ensemble<ModeAcces>
 }
 class Espace <<Entité>> {
   nom : String
@@ -224,12 +232,29 @@ class Zone <<Entité>> {
   nom : String
   capacite : Capacité
 }
+class PlanSalle <<Entité>> {
+  disposition : DispositionGraphique
+}
+class PlaceNumerotee <<Entité>> {
+  numero : String
+  position : PositionSurLePlan
+  etatDisponibilite : ÉtatDisponibilité
+}
 class CategorieBillet <<Entité>> {
   nom : String
+  type : TypeCategorieBillet
   prix : Prix
   quantite : Quantité
   conditions : ConditionsDeVente
   periodeVente : PériodeDeVente
+  datesValiditePass : DatesDeValidite
+  nombreEntreesPass : Entier
+  modesAcces : Ensemble<ModeAcces>
+}
+class CodePromotionnel <<Entité>> {
+  code : String
+  reduction : RéductionPromotionnelle
+  conditions : ConditionsDApplication
 }
 class HistoriqueConfiguration <<Entité>> {
   operation : String
@@ -243,6 +268,11 @@ Evenement *-- Espace
 Espace *-- Zone
 Evenement *-- CategorieBillet
 CategorieBillet --> Zone
+Evenement *-- PlanSalle
+PlanSalle *-- PlaceNumerotee
+PlaceNumerotee --> Zone
+Evenement *-- CodePromotionnel
+CodePromotionnel --> CategorieBillet : applicable à
 Evenement *-- HistoriqueConfiguration
 Evenement ..> CompteOrganisateur : <<par identité>>
 
@@ -346,13 +376,22 @@ skinparam classAttributeIconSize 0
 skinparam ArrowFontSize 11
 
 class Achat <<Racine>> {
-  montant : MontantDeLAchat
+  montantTotal : Montant
+  montantBillets : Montant
+  montantDon : Montant
+  reductionAppliquee : Montant
+  sourceSuivi : IdentifiantLienDeSuivi
   contenu : ContenuDeLAchat
 }
 class Billet <<Racine>> {
   qrCode : QRCode
   historiquePropriete : HistoriqueDePropriété
   etat : ÉtatBillet
+  nombreEntreesMax : Entier
+  nombreEntreesConsommees : Entier
+  datesValidite : DatesDeValidite
+  modesAcces : Ensemble<ModeAcces>
+  placeNumeroteeId : PlaceNumeroteeId
 }
 class Transfert <<Entité>> {
   ancienProprietaireId : CompteParticipantId
@@ -363,8 +402,10 @@ class Transfert <<Entité>> {
 Billet *-- Transfert
 Achat ..> Reservation : <<par identité>>
 Achat ..> Paiement : <<par identité>>
+Achat ..> CodePromotionnel : <<par identité>>
 Billet ..> Evenement : <<par identité>>
 Billet ..> Achat : <<par identité>>
+Billet ..> PlaceNumerotee : <<par identité>>
 Billet ..> CompteParticipant : <<par identité>>
 @enduml
 ```
@@ -506,8 +547,14 @@ class Historique <<Racine>> {
   contexte : String
   resultat : String
 }
+class LienDeSuivi <<Racine>> {
+  source : String
+  visites : Entier
+  commandesAttribuees : Entier
+}
 class Distribution <<Racine>> {
   destinataire : Destinataire
+  objetDistribue : BilletOuInformationDAcces
   canal : String
   etat : String
 }
@@ -517,22 +564,76 @@ class Notification <<Racine>> {
 
 Distribution ..> Billet : <<par identité>>
 Notification ..> Evenement : <<par identité>>
+LienDeSuivi ..> Evenement : <<par identité>>
+LienDeSuivi ..> Achat : <<par identité>>
 @enduml
 ```
 
 ![Analytics & Communication](classes-observation-communication.png)
 
-**Choix de relation :** ces cinq classes sont des **agrégats à membre unique** — pas de composition interne, car chacune est un enregistrement autonome (événement métier, statistique, historique, distribution, notification) sans invariant reliant plusieurs entités entre elles. `Événement métier` et `Statistique` n'ont même aucune référence sortante : c'est cohérent avec leur rôle d'observation passive (« les statistiques ne modifient pas les données métier »).
+**Choix de relation :** ces six classes sont des **agrégats à membre unique** — pas de composition interne, car chacune est un enregistrement autonome (événement métier, statistique, historique, lien de suivi, distribution, notification) sans invariant reliant plusieurs entités entre elles. `Événement métier` et `Statistique` restent des données d'observation passives (« les statistiques ne modifient pas les données métier »).
 
 ---
 
-## 12. Table des choix de relation
+## 12. Cybersecurity Operations (BC-13)
+
+```plantuml
+@startuml classes-cybersecurity-operations
+hide circle
+skinparam classAttributeIconSize 0
+left to right direction
+
+class AlerteCyber <<Racine>> {
+  id : Identifiant
+  categorie : CategorieSignal
+  severiteEstimee : Severite
+  qualification : QualificationHumaine
+  etat : EtatAlerte
+}
+class SignalDeSecurite <<Entité>> {
+  idSource : IdentifiantOpaque
+  source : SourceAutorisee
+  horodatage : DateHeure
+  actifReference : IdentifiantOpaque
+}
+class IncidentCyber <<Racine>> {
+  id : Identifiant
+  qualification : QualificationIncident
+  etat : EtatIncident
+  responsable : IdentifiantActeur
+}
+class DecisionDeReponseCyber <<Entité>> {
+  id : Identifiant
+  decideurHabilite : IdentifiantActeur
+  justification : Texte
+  mesureDemandee : TypeDeMesure
+  resultat : ResultatDeMesure
+}
+
+AlerteCyber *-- "1..*" SignalDeSecurite
+IncidentCyber ..> "1..*" AlerteCyber : <<par identité>>
+IncidentCyber *-- "0..*" DecisionDeReponseCyber
+
+note right of DecisionDeReponseCyber
+  La décision est humaine et autorisée.
+  Le module propriétaire applique
+  sa propre transition.
+end note
+@enduml
+```
+
+Les références aux comptes, événements, billets ou paiements sont des identifiants opaques. BC-13 ne devient pas propriétaire des données sources. Une alerte n'est pas une conclusion et ne déclenche pas automatiquement une mesure.
+
+---
+
+## 13. Table des choix de relation
 
 | Relation | Type retenu | Règle appliquée |
 |---|---|---|
 | Utilisateur — Compte participant / Compte organisateur | Composition | D4 (cycle de vie partagé) |
 | Organisation — Compte organisateur | Référence par identité | Cycle de vie de vérification indépendant |
-| Événement — Espace / Zone / Catégorie de billet / Historique config. | Composition | D4 (archivage commun) |
+| Événement — Espace / Zone / Catégorie de billet / Plan de salle / Code promotionnel / Historique config. | Composition | D4 (archivage commun) |
+| Plan de salle — Place numérotée | Composition | Cycle de vie commun avec le plan |
 | Catalogue — Événement | Vue en lecture (pas un agrégat) | Absence d'invariant propre |
 | Réservation — Disponibilité | Deux agrégats séparés, référence par identité | D3 (isoler l'invariant à forte contention) |
 | Paiement — Réconciliation | Deux agrégats séparés, référence par identité | Cycles de vie distincts, politique événementielle |
@@ -546,12 +647,12 @@ Notification ..> Evenement : <<par identité>>
 
 ---
 
-## 13. Note d'architecture — SOLID et patterns sans POO
+## 14. Note d'architecture — SOLID et patterns sans POO
 
 Vous avez posé la bonne question en amont : sans POO, SOLID (qui cible des classes avec comportement) ne s'applique pas littéralement. Ce diagramme montre comment la **même intention de conception** se traduit en discipline DDD tactique plutôt qu'en patterns objet :
 
 - **Responsabilité unique → une frontière, une raison de changer.** Chaque agrégat encapsule *un seul* invariant de cohérence (ou un petit groupe d'invariants fortement couplés). `Disponibilité` existe séparément de `Réservation` précisément pour que l'invariant de non-double-attribution ait sa propre frontière, changeable indépendamment du reste du processus de réservation.
-- **Ouvert/fermé → extensible par ajout d'agrégats, pas par modification.** Les 20 agrégats déjà identifiés couvrent le MVP ; un nouveau besoin (ex. revente de billets, hors périmètre actuel) s'ajouterait comme un nouvel agrégat référençant les existants par identité, sans les modifier.
+- **Ouvert/fermé → extensible par ajout d'agrégats, pas par modification.** Les 22 agrégats déjà identifiés couvrent le MVP ; un nouveau besoin (ex. revente de billets, hors périmètre actuel) s'ajouterait comme un nouvel agrégat référençant les existants par identité, sans les modifier.
 - **Inversion de dépendance → référence par identité (règle D2).** C'est l'équivalent structurel de l'inversion de dépendance en POO : un agrégat ne dépend jamais de la structure interne d'un autre, seulement de son identifiant. C'est ce qui permettra, plus tard, de faire évoluer ou même de déployer séparément les bounded contexts sans casser leurs consommateurs.
 - **Substitution / cohérence de contrat → objets de valeur.** Un objet de valeur (ex. `Prix`) est toujours remplacé en bloc, jamais muté partiellement — la substituabilité (règle R4 de `objets-valeur.md`) joue ici le rôle que la POO ferait porter à l'immutabilité d'un objet.
 
@@ -559,7 +660,7 @@ Ce n'est donc pas un renoncement à la rigueur de conception ; c'est son transfe
 
 ---
 
-## 14. Incohérences détectées dans les sources
+## 15. Incohérences détectées dans les sources
 
 En tant que revue de qualité avant de figer ce diagramme, deux écarts ont été identifiés entre les documents fournis :
 
@@ -569,11 +670,11 @@ En tant que revue de qualité avant de figer ce diagramme, deux écarts ont ét�
 
    Ce document a suivi `agregats.md` dans les deux cas, cette source étant la plus récente et la plus raffinée sur les questions de frontière (elle applique explicitement les règles D1 à D5 là où `entites.md` ne fait que lister des candidats de composition avant affinement). `agregats.md` signale d'ailleurs lui-même l'indépendance Billet/Achat comme un « choix structurant » à valider par l'équipe — ce diagramme n'invente donc rien, il documente une tension déjà connue de vos propres sources.
 
-2. **Décompte des agrégats :** le résumé de `agregats.md` (section 8) annonce « seize agrégats », mais le décompte détaillé des sections 5.1 à 5.12 en liste vingt (2+1+0+2+2+2+1+2+1+2+3+2). Ce document utilise le décompte détaillé (20), plus fiable qu'un chiffre récapitulatif. À signaler à l'équipe pour correction de `agregats.md`.
+2. **Décompte des agrégats :** l'écart antérieur entre le résumé et le détail de `agregats.md` est corrigé : son résumé annonce désormais 22 agrégats (2+1+0+2+2+2+1+2+1+2+3+2+2), BC-13 inclus.
 
 ---
 
-## 15. Cas limites et évolutivité
+## 16. Cas limites et évolutivité
 
 | Cas d'évolution futur | Impact sur ce modèle | Pourquoi la modélisation actuelle l'absorbe |
 |---|---|---|
@@ -584,26 +685,25 @@ En tant que revue de qualité avant de figer ce diagramme, deux écarts ont ét�
 
 ---
 
-## 16. Hypothèses retenues
+## 17. Hypothèses retenues
 
 1. **Les attributs de `CompteParticipant` et `CompteOrganisateur`**, absents de `entites.md` (seules les relations et invariants y figurent), sont représentés vides dans ce diagramme plutôt qu'inventés. Voir clarification n°1.
-2. **Le décompte de 20 agrégats** (plutôt que les 16 annoncés en résumé) est retenu comme référence pour ce document et les suivants.
+2. **Le décompte de 22 agrégats** (plutôt que les 16 annoncés en résumé) est retenu comme référence pour ce document et les suivants.
 3. **Les frontières de `agregats.md` priment** sur les relations de composition brutes de `entites.md` partout où les deux documents divergent (Billet/Achat, Point d'entrée/Événement).
 
 ---
 
-## 17. Points à clarifier avec le client / product owner
+## 18. Points à clarifier avec le client / product owner
 
 | # | Question | Pourquoi c'est important |
 |---|---|---|
 | 1 | Quels attributs propres portent `Compte participant` et `Compte organisateur` (au-delà du lien vers `Utilisateur`) ? | Actuellement vides dans les sources ; nécessaires pour le futur MCD |
 | 2 | Le choix Billet/Achat en agrégats séparés (déjà signalé comme à valider dans `agregats.md`) est-il confirmé par l'équipe ? | Structure toute la logique de transfert de billet et d'émission différée |
-| 3 | `agregats.md` doit-il être corrigé pour refléter 20 agrégats plutôt que 16 dans son résumé ? | Cohérence documentaire pour les phases suivantes |
-| 4 | Le Transfert de billet (confirmé dans le périmètre MVP) doit-il porter une notion de statut (`PENDING`/`ACCEPTED`/`REJECTED`) si le destinataire doit valider la réception ? | Actuellement modélisé comme une opération instantanée (Demande → Validation → Exécution) sans état intermédiaire explicite dans les attributs |
+| 3 | Le Transfert de billet (confirmé dans le périmètre MVP) doit-il porter une notion de statut (`PENDING`/`ACCEPTED`/`REJECTED`) si le destinataire doit valider la réception ? | Actuellement modélisé comme une opération instantanée (Demande → Validation → Exécution) sans état intermédiaire explicite dans les attributs |
 
 ---
 
-## 18. Statut
+## 19. Statut
 
 | Champ | Valeur |
 |---|---|
@@ -613,6 +713,6 @@ En tant que revue de qualité avant de figer ce diagramme, deux écarts ont ét�
 | Périmètre | MVP Eventix |
 | Marché | Cameroun |
 | Notation | PlantUML — UML 2.5, sans opérations |
-| Entités couvertes | 34/34 (`entites.md`) |
-| Agrégats couverts | 20/20 (`agregats.md`, décompte détaillé) |
+| Entités couvertes | 40/40 (`entites.md`) |
+| Agrégats couverts | 22/22 (`agregats.md`, décompte détaillé) |
 | Diagramme suivant | `diagrammes-de-sequence.md` |

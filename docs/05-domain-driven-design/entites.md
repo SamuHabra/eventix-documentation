@@ -44,7 +44,7 @@ Il ne redéfinit ni les bounded contexts, ni les termes du langage ubiquitaire. 
 
 Ce document est dérivé principalement de :
 
-- `05-domain-driven-design/bounded-contexts.md` — frontières des douze bounded contexts
+- `05-domain-driven-design/bounded-contexts.md` — frontières des treize bounded contexts
 - `05-domain-driven-design/langage-ubiquitaire.md` — vocabulaire métier par contexte
 
 Toute définition, frontière ou règle métier mentionnée implicitement renvoie à ces documents sources.
@@ -94,6 +94,7 @@ Chaque entité possède un identifiant unique :
 | `ENT-TRUST` | Entités du contexte Trust & Safety |
 | `ENT-OBSERVATION` | Entités du contexte Analytics & Observability |
 | `ENT-COMMUNICATION` | Entités du contexte Communication |
+| `ENT-CYBER` | Entités du contexte Cybersecurity Operations |
 
 ---
 
@@ -170,7 +171,7 @@ Chaque entité possède un identifiant unique :
 | **Cycle de vie** | `DRAFT` → `SUBMITTED` → `UNDER_REVIEW` → `VALIDATED` → `PUBLISHED` → `ONGOING` → `COMPLETED` → `CLOSED` → `ARCHIVED` |
 | **Responsabilités** | Porter la configuration, le cycle de vie et la visibilité de l'événement |
 
-**Attributs principaux** : nom, description, date, heure, lieu, capacité, catégories de billets, prix, périodes de vente.
+**Attributs principaux** : nom, description, date, heure, lieu, capacité, catégories de billets, prix, périodes de vente, modes d'accès proposés (sur place, direct, VOD).
 
 **États** : `DRAFT`, `SUBMITTED`, `UNDER_REVIEW`, `VALIDATED`, `PUBLISHED`, `ONGOING`, `COMPLETED`, `CLOSED`, `ARCHIVED`, `CANCELLED`.
 
@@ -217,7 +218,7 @@ Chaque entité possède un identifiant unique :
 | **Cycle de vie** | Création → Association à un événement → Archivage avec l'événement |
 | **Responsabilités** | Définir les conditions de vente d'un type de billet |
 
-**Attributs principaux** : nom, prix, quantité, conditions, caractéristiques.
+**Attributs principaux** : nom, type, prix, quantité, conditions et caractéristiques de vente, modes d'accès autorisés ; pour un pass, dates de validité et nombre maximal d'entrées.
 
 **Relations** : Associée à un Événement (ENT-CATALOG-01), à une Zone (ENT-CATALOG-03).
 
@@ -235,6 +236,32 @@ Chaque entité possède un identifiant unique :
 **Attributs principaux** : événement, opération, date, auteur, ancienne valeur, nouvelle valeur.
 
 **Invariants portés** : L'historique n'est jamais réécrit par les modifications ultérieures.
+
+### ENT-CATALOG-06 — Plan de salle
+
+| Champ | Valeur |
+|---|---|
+| **Définition** | Représentation des zones et places numérotées d'un événement, consultable et sélectionnable pendant l'achat |
+| **Identité** | Identifiant unique associé à un événement |
+| **Cycle de vie** | Configuration → Publication avec l'événement → Mise à jour des disponibilités |
+| **Responsabilités** | Présenter la disposition et l'état des places configurées |
+
+**Attributs principaux** : événement, zones, places numérotées, disposition graphique et association aux catégories de billets.
+
+**Relations** : Associé à un Événement (ENT-CATALOG-01), à des Zones (ENT-CATALOG-03) et aux disponibilités arbitrées par le contexte Booking & Availability.
+
+### ENT-CATALOG-07 — Code promotionnel
+
+| Champ | Valeur |
+|---|---|
+| **Définition** | Code configuré par l'organisateur qui applique une réduction à une commande éligible |
+| **Identité** | Identifiant unique dans le périmètre de l'événement |
+| **Cycle de vie** | Création → Activation pendant les conditions définies → Expiration ou désactivation |
+| **Responsabilités** | Porter le code, la réduction et les conditions d'application |
+
+**Attributs principaux** : événement, code, réduction, conditions d'application et état.
+
+**Relations** : Associé à un Événement (ENT-CATALOG-01) et aux commandes qui l'utilisent (ENT-TICKETING-01).
 
 ---
 
@@ -351,7 +378,7 @@ Chaque entité possède un identifiant unique :
 | **Cycle de vie** | Finalisation → Confirmation → Archivage |
 | **Responsabilités** | Finaliser la transaction, donner droit à l'émission de billets |
 
-**Attributs principaux** : réservation, paiement, acheteur, montant, date.
+**Attributs principaux** : réservation, paiement, acheteur, montant total, montant des billets, montant du don éventuel, réduction appliquée, source de suivi éventuelle, date.
 
 **Relations** : Associé à une Réservation (ENT-BOOKING-01), à un Paiement (ENT-PAYMENT-01).
 
@@ -363,14 +390,14 @@ Chaque entité possède un identifiant unique :
 |---|---|
 | **Définition** | Titre permettant l'accès à un événement selon les conditions définies |
 | **Identité** | Identifiant unique généré à l'émission, QR Code associé |
-| **Cycle de vie** | `ISSUED` → `USED` ou `CANCELLED` |
+| **Cycle de vie** | `ISSUED` → `USED` ou `CANCELLED` ; pour un pass, le quota d'entrées est consommé progressivement avant `USED` |
 | **Responsabilités** | Porter le droit d'accès, identifier le propriétaire, être contrôlé |
 
-**Attributs principaux** : événement, catégorie, propriétaire, QR Code, date d'émission.
+**Attributs principaux** : événement, catégorie, propriétaire, QR Code, date d'émission, modes d'accès autorisés, place numérotée éventuelle ; pour un pass, nombre maximal et nombre consommé d'entrées, dates de validité.
 
 **États** : `ISSUED`, `USED`, `CANCELLED`.
 
-**Invariants portés** : Un billet a un propriétaire actif unique. Un billet validé ne peut pas être validé une seconde fois.
+**Invariants portés** : Un billet a un propriétaire actif unique. Un billet à entrée unique déjà utilisé ne peut pas être réutilisé. Pour un pass, chaque entrée acceptée consomme une unité du quota ; aucune entrée n'est acceptée une fois le quota épuisé ou hors des dates de validité.
 
 **Relations** : Associé à un Événement (ENT-CATALOG-01), à un Achat (ENT-TICKETING-01), à un Propriétaire (ENT-IDENTITY-02).
 
@@ -604,6 +631,19 @@ Chaque entité possède un identifiant unique :
 
 **Invariants portés** : L'historique n'est jamais réécrit.
 
+### ENT-OBSERVATION-04 — Lien de suivi
+
+| Champ | Valeur |
+|---|---|
+| **Définition** | Lien partageable associant les visites et commandes attribuées à une source de promotion |
+| **Identité** | Identifiant unique associé à un événement et à une source |
+| **Cycle de vie** | Création → Partage → Collecte des visites et ventes attribuées → Archivage |
+| **Responsabilités** | Permettre l'analyse des performances de partenaires, influenceurs ou campagnes |
+
+**Attributs principaux** : événement, identifiant du lien, source, visites et commandes attribuées.
+
+**Relations** : Les événements et achats attribués alimentent les Statistiques (ENT-OBSERVATION-02). Un lien de suivi n'implique pas à lui seul de réduction.
+
 ---
 
 ## 5.12. BC-12 — Communication
@@ -617,7 +657,7 @@ Chaque entité possède un identifiant unique :
 | **Cycle de vie** | Préparation → Envoi → Confirmation → Archivage |
 | **Responsabilités** | Acheminer le billet au participant |
 
-**Attributs principaux** : billet, destinataire, canal (email), date, statut.
+**Attributs principaux** : billet ou informations d'accès en ligne, destinataire, canal (email ou canal d'accès), date, statut.
 
 **Relations** : Porte sur un Billet (ENT-TICKETING-02).
 
@@ -637,6 +677,48 @@ Chaque entité possède un identifiant unique :
 **Relations** : Porte sur un Événement (ENT-CATALOG-01).
 
 ---
+
+## 5.13. BC-13 — Cybersecurity Operations
+
+### ENT-CYBER-01 — Signal de sécurité
+
+| Champ | Valeur |
+|---|---|
+| **Définition** | Fait technique observé, transmis par une source identifiée |
+| **Identité** | Identifiant stable du signal à sa source |
+| **Cycle de vie** | Observation → ingestion/normalisation → traitement ou expiration selon la politique retenue |
+| **Responsabilités** | Conserver la provenance et le contexte minimisé requis pour le triage |
+
+Un signal n'est pas une alerte confirmée ni une preuve d'attaque.
+
+### ENT-CYBER-02 — Alerte cybersécurité
+
+| Champ | Valeur |
+|---|---|
+| **Définition** | Élément à examiner, créé à partir d'un ou plusieurs signaux |
+| **Identité** | Identifiant unique d'alerte |
+| **Cycle de vie** | Création → triage → qualification → clôture ou rattachement à un incident |
+| **Responsabilités** | Présenter le contexte disponible, l'état et la source/règle de détection |
+
+### ENT-CYBER-03 — Incident cybersécurité
+
+| Champ | Valeur |
+|---|---|
+| **Définition** | Dossier d'investigation regroupant des alertes et des constats qualifiés |
+| **Identité** | Identifiant unique d'incident |
+| **Cycle de vie** | Ouverture → investigation → qualification (confirmé, faux positif ou non concluant) → réponse → résolution/clôture |
+| **Responsabilités** | Conserver la chronologie, les éléments autorisés, les responsables et l'état de l'investigation |
+
+### ENT-CYBER-04 — Décision de réponse cyber
+
+| Champ | Valeur |
+|---|---|
+| **Définition** | Décision consignée par une personne habilitée à la suite de l'analyse d'un incident |
+| **Identité** | Identifiant unique de décision |
+| **Cycle de vie** | Décision humaine → justification et habilitation → transmission au propriétaire de l'actif → résultat et clôture |
+| **Responsabilités** | Tracer le décideur, le motif, la mesure demandée, la portée, l'exécution et le résultat |
+
+**Relations** : une Alerte référence un ou plusieurs Signaux ; un Incident regroupe des Alertes ; une Décision référence un Incident et l'actif concerné par identité. Ces relations ne donnent pas à BC-13 la propriété de l'actif métier.
 
 # 6. Cycle de vie des entités
 
@@ -663,6 +745,8 @@ Chaque entité possède un identifiant unique :
 | Transfert | Minutes | Exécution |
 | Distribution | Minutes | Confirmation |
 | Notification | Minutes | Confirmation |
+| Alerte cybersécurité | Selon politique à décider | Clôture |
+| Incident cybersécurité | Selon politique à décider | Résolution/clôture |
 
 ## 6.3. Entités à conservation permanente
 
@@ -673,6 +757,7 @@ Chaque entité possède un identifiant unique :
 | Historique | Traçabilité des opérations |
 | Présence | Preuve d'accès |
 | Signalement | Traçabilité des décisions de sécurité |
+| Incident cybersécurité | Investigation et décision de réponse traçables, selon politique de rétention à valider |
 
 ---
 
@@ -710,6 +795,9 @@ Chaque entité possède un identifiant unique :
 | Mesure de sécurité | Événement, Compte ou Organisation | S'applique à |
 | Événement métier | Toutes | Émis par |
 | Statistique | Toutes | Agrège |
+| Alerte cybersécurité | Signaux de sécurité | Regroupe |
+| Incident cybersécurité | Alertes cybersécurité | Regroupe |
+| Décision de réponse cyber | Incident et actif référencé par identité | Documente une réponse décidée |
 
 ---
 
@@ -733,7 +821,7 @@ Chaque entité possède un identifiant unique :
 
 # 9. Résumé
 
-Ce document identifie trente-quatre entités métier réparties dans les douze bounded contexts d'Eventix. Chaque entité possède une identité unique, un cycle de vie et des responsabilités propres. Les relations entre entités sont explicites et les invariants qu'elles portent sont identifiés. Ce document constitue la base pour la définition des objets de valeur, des agrégats et des événements métier dans les phases ultérieures.
+Ce document identifie quarante entités métier réparties dans les treize bounded contexts d'Eventix. Chaque entité possède une identité unique, un cycle de vie et des responsabilités propres. Les relations entre entités sont explicites et les invariants qu'elles portent sont identifiés. Ce document constitue la base pour la définition des objets de valeur, des agrégats et des événements métier dans les phases ultérieures.
 
 ---
 

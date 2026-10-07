@@ -1,7 +1,7 @@
 # Règles métier — Eventix
 
-**Version :** 1.0
-**Statut :** Validé — MVP
+**Version :** 1.1
+**Statut :** À valider — règles des passes et dons ajoutées au MVP
 **Marché :** Cameroun
 **Dernière mise à jour :** 2026-08-10
 
@@ -237,9 +237,9 @@ La liste d'attente et la libération automatique des places sont des évolutions
 
 # 5. Contrôle des billets
 
-## RM13 — Un billet déjà utilisé est refusé
+## RM13 — Un billet à entrée unique déjà utilisé est refusé
 
-Lorsqu'un billet a déjà été validé pour l'événement, toute nouvelle tentative d'utilisation doit être refusée.
+Lorsqu'un billet à entrée unique a déjà été validé pour l'événement, toute nouvelle tentative d'utilisation doit être refusée. Pour un pass, l'accès reste possible tant que ses dates sont valides et que son quota d'entrées n'est pas épuisé.
 
 ```text
 Billet valide
@@ -251,9 +251,9 @@ Oui → Accès refusé
 
 ---
 
-## RM14 — Un billet ne peut être validé qu'une seule fois
+## RM14 — Une même entrée ne peut être consommée qu'une seule fois
 
-Pour un même événement, une seule tentative de validation peut réussir.
+Pour un billet standard, une seule validation peut réussir. Pour un pass, chaque entrée doit être traitée séparément : une seule validation concurrente peut consommer une unité donnée du quota, tandis que des entrées successives peuvent réussir tant qu'il reste des entrées.
 
 Si deux contrôleurs tentent de valider le même billet simultanément :
 
@@ -262,12 +262,52 @@ Billet
  ├── Tentative A
  └── Tentative B
         ↓
-Une seule validation acceptée
+Une seule validation acceptée pour cette entrée
         ↓
 Toutes les autres refusées
 ```
 
 La manière technique de garantir cette règle sera définie lors de la conception du système.
+
+## RM34 — Chaque entrée acceptée consomme une entrée de pass
+
+Un pass comporte un nombre maximal d'entrées. Chaque scan d'entrée accepté consomme exactement une entrée, y compris lorsqu'un participant revient après être sorti.
+
+Les sorties ne sont pas scannées. Un scan refusé ne consomme aucune entrée. Lorsque le nombre maximal d'entrées a été atteint, toute nouvelle tentative est refusée. Les validations concurrentes ne doivent jamais consommer plus d'entrées que le quota restant.
+
+Un pass n'est utilisable que pendant les dates de validité qui lui sont associées et selon les dates de l'événement.
+
+## RM35 — Un don reste distinct du billet et de la disponibilité
+
+Un don facultatif est une ligne financière distincte du prix du billet. Il ne constitue pas un billet, ne donne pas de droit d'accès et ne consomme pas de disponibilité.
+
+Un don peut être ajouté à une commande de billet gratuit ou payant. Un montant de don supérieur à zéro doit être payé avant la finalisation de la commande. Sans don, le participant ne paie rien et le parcours actuel d'obtention d'un billet gratuit reste inchangé.
+
+## RM36 — Les droits d'accès dépendent du type de billet
+
+Un événement peut proposer des accès sur place, en ligne ou les deux. Le billet détermine les accès autorisés, notamment l'entrée physique, le direct ou la VOD. Les informations permettant l'accès en ligne ne sont communiquées qu'aux détenteurs de billets éligibles.
+
+La responsabilité d'hébergement et de diffusion du contenu vidéo doit être identifiée séparément ; Eventix ne garantit pas de fournir lui-même le service de streaming.
+
+## RM37 — Un code promotionnel applique uniquement sa réduction valide
+
+Une réduction n'est appliquée que si le code existe, est actif et est applicable à la commande selon les conditions configurées par l'organisateur. Un code invalide, inactif ou non applicable ne réduit pas le montant à payer.
+
+## RM38 — Un lien de suivi identifie la source d'une vente
+
+Un lien de suivi permet d'associer les visites et les commandes finalisées à un partenaire, un influenceur ou une campagne. Il n'accorde pas de réduction à lui seul, sauf si un code promotionnel distinct est également appliqué.
+
+## RM39 — Une place numérotée ne peut être vendue qu'une fois
+
+Pour un événement avec placement numéroté, une place est indisponible dès qu'elle est attribuée à une commande finalisée. Les réservations concurrentes d'une même place ne peuvent pas aboutir à plusieurs ventes.
+
+## RM40 — Une alerte cybersécurité nécessite une qualification humaine
+
+Un signal de détection constitue un indice à examiner et non une preuve suffisante qu'une attaque est confirmée.
+
+Un analyste habilité doit pouvoir examiner l'alerte, consigner sa qualification et transmettre les incidents nécessitant une décision. Les mesures de protection ayant un effet sur les comptes, événements, opérations financières ou services Eventix doivent être décidées et autorisées par un responsable humain habilité. Eventix ne les applique pas automatiquement dans le périmètre retenu.
+
+La qualification, la décision, son auteur, sa justification et son résultat doivent être traçables. Les mécanismes de collecte, de détection et de protection seront définis lors des phases de conception et de sécurité.
 
 ---
 
@@ -487,6 +527,8 @@ Règlement organisateur
 ## RM27 — Un billet peut changer de propriétaire
 
 Lorsqu'un transfert est autorisé, le billet change de propriétaire sans qu'une copie du billet soit créée.
+
+Le transfert d'un pass ne réinitialise pas le nombre d'entrées déjà consommées.
 
 ```text
 Jean

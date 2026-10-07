@@ -975,9 +975,171 @@ autres services événementiels ;
 mode offline avancé ;
 synchronisation distribuée avancée.
 
-Ces fonctionnalités feront l'objet de User Stories propres lorsqu'elles entreront officiellement dans le périmètre produit.
+Ces fonctionnalités feront l'objet de User Stories propres lorsqu'elles entreront officiellement dans le périmètre produit. Les passes multi-jours et les dons optionnels ci-dessous sont explicitement intégrés au MVP.
 
-15. Matrice synthétique des User Stories
+15. User Stories ajoutées au MVP
+
+US-041 — Configurer un pass multi-jours
+
+Acteur : Organisateur
+Domaine : Billetterie
+Priorité produit : MUST
+
+En tant qu'organisateur,
+je veux proposer un pass valable sur plusieurs dates de mon événement et définir son nombre maximal d'entrées,
+afin de vendre un accès multi-jours dont les entrées peuvent être contrôlées.
+
+Règles associées : RM23, RM24, RM34
+
+US-042 — Contrôler les entrées d'un pass
+
+Acteur : Agent de contrôle
+Domaine : Accès
+Priorité produit : MUST
+
+En tant qu'agent de contrôle,
+je veux que chaque scan d'entrée accepté consomme une entrée du pass,
+afin de refuser l'accès lorsque son quota est épuisé.
+
+Chaque scan signifie une entrée ; aucune sortie n'est scannée. Une entrée refusée ne consomme pas le quota.
+
+Règles associées : RM13, RM14, RM16, RM34
+
+US-043 — Configurer les dons optionnels
+
+Acteur : Organisateur
+Domaine : Finance
+Priorité produit : MUST
+
+En tant qu'organisateur,
+je veux activer ou désactiver les dons optionnels et définir des montants suggérés,
+afin de permettre aux participants de soutenir mon événement.
+
+Règle associée : RM35
+
+US-044 — Ajouter un don à une commande
+
+Acteur : Participant
+Domaine : Paiement
+Priorité produit : MUST
+
+En tant que participant,
+je veux ajouter un don facultatif à l'obtention d'un billet gratuit ou à l'achat d'un billet payant, en choisissant un montant suggéré ou libre,
+afin de contribuer au financement de l'événement.
+
+Un don supérieur à zéro est inclus dans le paiement et enregistré distinctement du prix du billet. Sans don, le participant ne paie rien et le parcours gratuit actuel est conservé.
+
+Règle associée : RM35
+
+US-045 — Configurer la billetterie hybride
+
+Acteur : Organisateur
+Domaine : Événement / Billetterie
+Priorité produit : MUST
+
+En tant qu'organisateur,
+je veux proposer pour mon événement des billets d'accès sur place, en ligne ou combinant ces modes,
+afin de vendre simultanément des accès physiques et des accès à un direct ou à une VOD.
+
+Règle associée : RM36
+
+US-046 — Accéder à un direct ou à une VOD avec son billet
+
+Acteur : Participant
+Domaine : Billetterie
+Priorité produit : MUST
+
+En tant que détenteur d'un billet autorisant l'accès en ligne,
+je veux recevoir les informations nécessaires pour rejoindre le direct ou consulter la VOD,
+afin d'accéder au contenu inclus dans mon billet.
+
+Règle associée : RM36
+
+US-047 — Créer et appliquer des codes promotionnels
+
+Acteur : Organisateur / Participant
+Domaine : Vente / Paiement
+Priorité produit : MUST
+
+En tant qu'organisateur, je veux créer des codes promotionnels avec une réduction et des conditions d'application,
+et en tant que participant, je veux saisir un code lors de ma commande,
+afin de bénéficier d'une réduction valide sur les billets concernés.
+
+Règle associée : RM37
+
+US-048 — Suivre les ventes issues de liens partagés
+
+Acteur : Organisateur
+Domaine : Marketing / Statistiques
+Priorité produit : MUST
+
+En tant qu'organisateur,
+je veux créer des liens de suivi pour mes partenaires ou influenceurs et consulter les ventes qui leur sont attribuées,
+afin de mesurer les résultats de mes actions de promotion.
+
+Règle associée : RM38
+
+US-049 — Configurer un plan de salle interactif
+
+Acteur : Organisateur
+Domaine : Espaces
+Priorité produit : MUST
+
+En tant qu'organisateur,
+je veux représenter les places numérotées de mon événement sur un plan interactif,
+afin que les participants puissent choisir une place précise.
+
+Règle associée : RM39
+
+US-050 — Choisir une place sur le plan de salle
+
+Acteur : Participant
+Domaine : Billetterie
+Priorité produit : MUST
+
+En tant que participant,
+je veux sélectionner et réserver une place disponible depuis le plan de salle,
+afin d'obtenir un billet associé à la place choisie.
+
+Règle associée : RM39
+
+US-051 — Consulter les alertes de cybersécurité
+
+Acteur : Analyste cybersécurité Eventix
+Domaine : Cybersécurité
+Priorité produit : MUST
+
+En tant qu'analyste cybersécurité,
+je veux consulter les alertes et les actifs concernés dans un tableau de bord,
+afin de repérer et prioriser les activités potentiellement malveillantes affectant Eventix.
+
+Règle associée : RM40
+
+US-052 — Analyser et qualifier un incident cybersécurité
+
+Acteur : Analyste cybersécurité Eventix
+Domaine : Cybersécurité
+Priorité produit : MUST
+
+En tant qu'analyste cybersécurité,
+je veux examiner les alertes associées, documenter mon analyse et qualifier le dossier,
+afin de distinguer une suspicion, un incident confirmé, un faux positif ou un cas non concluant.
+
+Règle associée : RM40
+
+US-053 — Autoriser et tracer une réponse à un incident
+
+Acteur : Responsable humain habilité
+Domaine : Cybersécurité
+Priorité produit : MUST
+
+En tant que responsable habilité,
+je veux décider et consigner les mesures de réponse à un incident, avec leur justification et leur résultat,
+afin que les interventions soient contrôlées et auditables.
+
+Règle associée : RM40
+
+## 16. Matrice synthétique des User Stories
 ID	Acteur	Domaine	Besoin	Priorité
 US-001	Participant	Découverte	Découvrir un événement	MUST
 US-002	Participant	Découverte	Consulter les détails	MUST
@@ -1019,7 +1181,20 @@ US-037	Administrateur	Réconciliation	Réconcilier un paiement tardif	MUST
 US-038	Administrateur	Finance	Suivre les opérations financières	MUST
 US-039	Agent de vente	Vente physique	Réaliser une vente	À préciser
 US-040	Agent de vente	Vente physique	Tracer une vente	À préciser
-16. Règles de dépendance
+US-041	Organisateur	Billetterie	Configurer un pass multi-jours	MUST
+US-042	Agent de contrôle	Accès	Contrôler les entrées d'un pass	MUST
+US-043	Organisateur	Finance	Configurer les dons optionnels	MUST
+US-044	Participant	Paiement	Ajouter un don à une commande	MUST
+US-045	Organisateur	Événement / billetterie	Configurer la billetterie hybride	MUST
+US-046	Participant	Billetterie	Accéder à un direct ou à une VOD	MUST
+US-047	Organisateur / Participant	Vente / paiement	Créer et appliquer des codes promotionnels	MUST
+US-048	Organisateur	Marketing / statistiques	Suivre les ventes issues de liens partagés	MUST
+US-049	Organisateur	Espaces	Configurer un plan de salle interactif	MUST
+US-050	Participant	Billetterie	Choisir une place sur le plan de salle	MUST
+US-051	Analyste cybersécurité	Eventix Cybersécurité	Consulter les alertes	MUST
+US-052	Analyste cybersécurité	Eventix Cybersécurité	Analyser et qualifier un incident	MUST
+US-053	Responsable habilité	Eventix Cybersécurité	Décider et tracer une réponse	MUST
+17. Règles de dépendance
 
 Les dépendances entre User Stories sont volontairement limitées.
 

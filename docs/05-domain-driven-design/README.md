@@ -22,13 +22,13 @@ Elle consomme les livrables des phases amont — les règles métier validées (
 
 | Document | Rôle | Sources |
 |---|---|---|
-| `vue-d-ensemble-du-domaine.md` | Vue transversale du domaine : définitions, états métier et invariants de référence | Phases 03 et 04 |
-| `domaines.md` | Les douze domaines métier et leurs frontières | Vue d'ensemble |
-| `sous-domaines.md` | Décomposition des douze domaines en trente-six sous-domaines | `domaines.md` |
-| `core-domaines.md` | Classification cœur / soutien / générique des sous-domaines au regard de la proposition de valeur | `sous-domaines.md`, proposition de valeur |
+| `vue-d-ensemble-du-domaine.md` | Vue transversale du domaine : définitions, états métier et invariants de référence ; inclut la cybersécurité opérationnelle | Phases 03 et 04 |
+| `domaines.md` | Treize domaines métier et leurs frontières, dont le domaine cyber interne ajouté au MVP | Vue d'ensemble |
+| `sous-domaines.md` | Décomposition des treize domaines en sous-domaines | `domaines.md` |
+| `core-domain.md` | Classification cœur / soutien / générique des sous-domaines au regard de la proposition de valeur | `sous-domaines.md`, proposition de valeur |
 | `entites.md` | Entités, relations et invariants portés par les entités | Vue d'ensemble |
 | `objets-valeur.md` | Objets de valeur rattachés aux entités | Vue d'ensemble |
-| `agregats.md` | Regroupement en seize frontières de cohérence réparties dans les douze bounded contexts | `entites.md`, `objets-valeur.md` |
+| `agregats.md` | Regroupement des entités en frontières de cohérence des bounded contexts, dont BC-13 | `entites.md`, `objets-valeur.md` |
 | `services-de-domaine.md` | Coordinations inter-agrégats ne pouvant appartenir à une seule frontière | `agregats.md` |
 | `evenements-de-domaine.md` | Événements produits par les transitions d'état et les services, avec consommateurs | `agregats.md`, `services-de-domaine.md` |
 | `regles-du-domaine.md` | Traduction formelle de chaque règle métier en mécanisme du modèle | Règles métier (phase 03), `agregats.md`, `evenements-de-domaine.md` |

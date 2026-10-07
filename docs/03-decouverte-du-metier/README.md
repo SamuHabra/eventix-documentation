@@ -81,6 +81,18 @@ Ces questions doivent être étudiées avant de prendre certaines décisions imp
 
 Documente les contraintes qui peuvent influencer le fonctionnement du produit ou les décisions futures.
 
+### `services-organisationnels/`
+
+Présente les familles de services qu'Eventix rend aux organisateurs par l'intermédiaire de la plateforme. Ces documents exposent la valeur métier, les bénéficiaires et les limites de l'offre ; ils complètent les besoins métier sans recopier les exigences ni promettre une prestation humaine ou opérationnelle qui n'a pas été décidée.
+
+Consulter le [guide des services organisationnels](./services-organisationnels/README.md), puis les pages consacrées au [marketing](./services-organisationnels/marketing.md), à la [finance](./services-organisationnels/finance.md), aux [opérations événementielles](./services-organisationnels/operations-evenementielles.md) et à la [sécurité et confiance métier](./services-organisationnels/securite-et-confiance.md).
+
+### `cybersecurite-eventix/`
+
+Recense les enjeux de cybersécurité du système Eventix, en distinguant les démarches défensives et les évaluations offensives autorisées. Cette découverte identifie les actifs, impacts, risques et décisions à approfondir ; elle ne choisit pas les mécanismes techniques, qui relèvent des phases de conception ultérieures.
+
+Voir le [cadre de découverte cybersécurité](./cybersecurite-eventix/README.md).
+
 ---
 
 ## 4. Principe de travail
@@ -95,6 +107,8 @@ L'équipe doit distinguer :
 - Questions ouvertes : informations encore inconnues.
 
 Une hypothèse ne doit pas être considérée comme une règle métier tant qu'elle n'a pas été validée.
+
+Les documents de services et de cybersécurité distinguent également les capacités déjà documentées, les hypothèses à valider et les décisions reportées aux phases suivantes. La présence d'un sujet dans ce dossier ne signifie pas à elle seule qu'une capacité est incluse au MVP.
 
 ---
 

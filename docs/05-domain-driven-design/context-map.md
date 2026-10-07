@@ -30,7 +30,7 @@
 
 # 1. Objectif
 
-Ce document établit la carte des relations entre les douze bounded contexts définis dans `bounded-contexts.md`. Pour chaque relation, il précise :
+Ce document établit la carte des relations entre les treize bounded contexts définis dans `bounded-contexts.md`, dont BC-13 ajouté pour la supervision cyber du MVP. Pour chaque relation, il précise :
 
 - le type de relation (partenariat, client-fournisseur, conformiste, etc.) ;
 - la direction de la dépendance ;
@@ -257,16 +257,17 @@ Rôle dans la carte : BC-09 est un contexte de soutien qui traite les obligation
 | BC-10 → BC-01 | Client-Fournisseur | Sortante | Mesures de sécurité | Les décisions s'appliquent aux comptes et organisations |
 | BC-10 → BC-02 | Client-Fournisseur | Sortante | Mesures de sécurité | Les décisions s'appliquent aux événements |
 
-Rôle dans la carte : BC-10 est un contexte générique transversal. Il reçoit des signaux de tous les contextes et émet des décisions qui s'appliquent à IDENTITY et CATALOG.
+Rôle dans la carte : BC-10 est un contexte générique transversal. Il reçoit des signalements et éléments d'analyse liés à la confiance métier, puis émet des décisions qui s'appliquent à IDENTITY et CATALOG. Les signaux techniques et dossiers d'incident de BC-13 n'y sont pas transmis automatiquement ; un lien contrôlé n'est établi que si un incident cyber a un impact métier pertinent.
 
 ## 6.11. BC-11 — Analytics & Observability
 
 | Relation | Type | Direction | Nature de l'échange | Justification |
 |---|---|---|---|---|
-| Tous les BC → BC-11 | Événement Publié | Entrante | Événements métier | ANALYTICS agrège les faits marquants de tous les contextes |
+| BC-01 à BC-12 → BC-11 | Événement Publié | Entrante | Faits métier autorisés | ANALYTICS agrège les faits métier utiles à ses indicateurs et journaux |
+| BC-13 → BC-11 (conditionnelle) | Contrat à valider | Entrante | Indicateurs agrégés non sensibles uniquement | Aucun signal, alerte, incident ou décision cyber brut n'est consommé par défaut |
 | BC-11 → ORGANISATEUR | Service Hébergé | Sortante | Statistiques et historique | L'organisateur consulte ses données d'activité |
 
-Rôle dans la carte : BC-11 est un contexte cœur transversal. Il consomme les événements de tous les contextes et produit des agrégats en lecture seule.
+Rôle dans la carte : BC-11 est un contexte cœur transversal. Il consomme les faits métier autorisés et produit des agrégats en lecture seule ; il ne remplace pas la supervision cybersécurité de BC-13.
 
 ## 6.12. BC-12 — Communication
 
@@ -277,6 +278,16 @@ Rôle dans la carte : BC-11 est un contexte cœur transversal. Il consomme les �
 | BC-12 → PARTICIPANT | Service Hébergé | Sortante | Communications | Le participant reçoit ses billets et notifications |
 
 Rôle dans la carte : BC-12 est un contexte générique de transmission. Il ne génère pas de données propres mais achemine celles de TICKETING et CATALOG vers les participants.
+
+## 6.13. BC-13 — Cybersecurity Operations
+
+| Relation | Type | Direction | Nature de l'échange | Justification |
+|---|---|---|---|---|
+| BC-01 → BC-13 | Client-Fournisseur | Entrante | Identité et habilitations | Contrôler les accès au tableau de bord et aux décisions de réponse |
+| BC-01 à BC-12 → BC-13 | Événement Publié | Entrante | Signaux de sécurité minimisés, lorsqu'une source et un besoin sont validés | Détecter et examiner une activité suspecte sans faire de BC-13 une dépendance des parcours |
+| BC-13 → module propriétaire de l'actif | Client-Fournisseur | Sortante, après approbation humaine | Décision de réponse cyber autorisée et résultat | Le propriétaire applique ou refuse une transition portant sur ses données |
+
+Les intégrations et les sources concrètes ne sont pas encore sélectionnées. Les faits collectés par BC-13 ne prouvent pas à eux seuls une attaque ; ses décisions ne sont pas les décisions de confiance métier de BC-10.
 
 ---
 
@@ -345,6 +356,18 @@ Ce flux traverse quatre bounded contexts et illustre la gestion des cas particul
 
 ---
 
+## 7.5. Supervision cybersécurité du système
+
+```text
+Modules sources autorisés ── signaux minimisés ──> BC-13
+BC-01 ── identité et habilitations ──────────────> BC-13
+Analyste / responsable habilité ── examen et décision tracée ──> BC-13
+BC-13 ── décision de réponse approuvée ──────────> module propriétaire de l'actif
+Module propriétaire ── résultat de la mesure ───> BC-13
+```
+
+BC-13 traite la sécurité du système Eventix. BC-10 reste responsable des signalements et mesures métier ; BC-11 reste responsable des statistiques et faits analytiques. La supervision est découplée du chemin nominal des ventes et contrôles. Une alerte ne déclenche pas une action sans décision humaine habilitée.
+
 # 8. Points de friction identifiés
 
 ## 8.1. Friction 1 : Cohérence entre BC-02 et BC-07
@@ -365,38 +388,38 @@ Ce flux traverse quatre bounded contexts et illustre la gestion des cas particul
 - **Risque :** Cycle de dépendances difficile à gérer.
 - **Mitigation :** La relation est décomposée en deux flux unidirectionnels : BC-02 publie des événements métier (asynchrone), BC-10 émet des décisions (asynchrone). Il n'y a pas d'appel synchrone circulaire.
 
-## 8.4. Friction 4 : Volume d'événements vers BC-11
+## 8.4. Friction 4 : Volume et périmètre des faits vers BC-11
 
-- **Nature :** BC-11 consomme les événements de tous les contextes.
+- **Nature :** BC-11 collecte les faits métier autorisés de BC-01 à BC-12 ; les données opérationnelles cyber de BC-13 sont exclues par défaut.
 - **Risque :** Surcharge du contexte d'analyse en cas de pic d'activité.
-- **Mitigation :** La consommation est asynchrone par nature. Le traitement progressif des remboursements dans BC-09 illustre le principe de résilience aux pics.
+- **Mitigation :** La consommation est asynchrone par nature et les événements transmis sont définis par contrat. Tout indicateur partagé par BC-13 doit être agrégé, non sensible et explicitement validé.
 
 ---
 
 # 9. Alignement avec le core domain
 
-## 9.1. Densité des relations par catégorie
+## 9.1. Répartition des contextes par catégorie
 
-| Catégorie | Nombre de BC | Nombre de relations sortantes | Nombre de relations entrantes |
-|---|---|---|---|
-| Cœur | 5 | 12 | 8 |
-| Soutien | 3 | 6 | 6 |
-| Générique | 4 | 10 | 14 |
+| Catégorie | Nombre de BC |
+|---|---:|
+| Cœur | 5 |
+| Soutien | 4 |
+| Générique | 4 |
 
-## 9.2. Contextes cœur et leurs relations
+## 9.2. Contextes cœur et partenaires clés
 
-| Contexte cœur | Relations principales | Partenaires clés |
-|---|---|---|
-| BC-02 | 7 relations sortantes | BC-03, BC-04, BC-06, BC-07, BC-12 |
-| BC-03 | 2 relations | BC-02, PARTICIPANT |
-| BC-06 | 5 relations | BC-05, BC-02, BC-07, BC-12, PARTICIPANT |
-| BC-07 | 4 relations | BC-06, BC-02, BC-11 |
-| BC-11 | 2 relations | Tous les BC, ORGANISATEUR |
+| Contexte cœur | Partenaires clés |
+|---|---|
+| BC-02 | BC-03, BC-04, BC-06, BC-07, BC-12 |
+| BC-03 | BC-02, PARTICIPANT |
+| BC-06 | BC-05, BC-02, BC-07, BC-12, PARTICIPANT |
+| BC-07 | BC-06, BC-02, BC-11 |
+| BC-11 | BC-01 à BC-12 pour les faits métier autorisés ; indicateurs agrégés BC-13 uniquement sur contrat validé ; ORGANISATEUR |
 
 ## 9.3. Observations
 
 - BC-02 est le hub central : il fournit à quatre contextes cœur et deux contextes de soutien.
-- BC-11 est le consommateur universel : il reçoit de tous les contextes sans fournir de données métier en retour.
+- BC-11 est un consommateur transversal de faits métier autorisés, pas un consommateur universel de données : les informations cyber de BC-13 restent exclues par défaut.
 - BC-05 et BC-09 forment un sous-système : la réconciliation des paiements tardifs crée une relation directe entre eux.
 - BC-07 et BC-11 forment un sous-système : la présence enregistrée alimente directement l'analyse.
 
@@ -420,7 +443,7 @@ Une relation Client-Fournisseur peut être implémentée par un appel de fonctio
 
 # 11. Résumé
 
-Ce document établit la carte des relations entre les douze bounded contexts d'Eventix. Il identifie quatre types de relations (Client-Fournisseur, Événement Publié, Service Hébergé, Partenariat) et décrit les échanges entre chaque paire de contextes connectés. Quatre points de friction sont identifiés avec leurs mitigations. La carte confirme le rôle central de BC-02 (Event Catalog) et la densité des relations entre les contextes cœur du parcours participant.
+Ce document établit la carte des relations entre les treize bounded contexts d'Eventix : les douze contextes métier historiques et BC-13 pour la supervision cybersécurité. Il identifie quatre types de relations (Client-Fournisseur, Événement Publié, Service Hébergé, Partenariat) et décrit les échanges entre contextes connectés, y compris la frontière cyber. Les points de friction et leurs mitigations restent suivis dans le registre du document.
 
 ---
 

@@ -27,15 +27,16 @@
 13. [Sous-domaines de TRUST & SAFETY](#13-sous-domaines-de-trust--safety)
 14. [Sous-domaines de OBSERVATION](#14-sous-domaines-de-observation)
 15. [Sous-domaines de COMMUNICATION](#15-sous-domaines-de-communication)
-16. [Résumé du découpage](#16-résumé-du-découpage)
-17. [Principes de découpage](#17-principes-de-découpage)
-18. [Statut](#18-statut)
+16. [Sous-domaines de CYBERSECURITY OPERATIONS](#16-sous-domaines-de-cybersecurity-operations)
+17. [Résumé du découpage](#17-résumé-du-découpage)
+18. [Principes de découpage](#18-principes-de-découpage)
+19. [Statut](#19-statut)
 
 ---
 
 # 1. Objectif
 
-Ce document décompose chacun des douze domaines définis dans le document source en sous-domaines. Pour chaque sous-domaine, il précise :
+Ce document décompose chacun des treize domaines définis dans le document source en sous-domaines. Pour chaque sous-domaine, il précise :
 
 - la responsabilité propre à l'échelle du sous-domaine ;
 - la limite avec les sous-domaines voisins du même domaine ;
@@ -103,6 +104,9 @@ Chaque sous-domaine possède un identifiant dérivé de celui de son domaine par
 | `SD-12-1` | Mise à disposition du billet | COMMUNICATION |
 | `SD-12-2` | Distribution par email | COMMUNICATION |
 | `SD-12-3` | Notifications d'événement | COMMUNICATION |
+| `SD-13-1` | Collecte et normalisation des signaux de sécurité | CYBERSECURITY OPERATIONS |
+| `SD-13-2` | Triage et investigation des alertes/incidents cyber | CYBERSECURITY OPERATIONS |
+| `SD-13-3` | Décision humaine et traçabilité de la réponse cyber | CYBERSECURITY OPERATIONS |
 
 ---
 
@@ -418,7 +422,40 @@ Les modalités détaillées de communication restent encadrées par les capacit�
 
 ---
 
-# 16. Résumé du découpage
+# 16. Sous-domaines de CYBERSECURITY OPERATIONS
+
+| Champ | Valeur |
+|---|---|
+| **Domaine parent** | `DOM-13` — CYBERSECURITY OPERATIONS |
+| **Dépendances du domaine** | Reçoit des signaux minimisés de sources autorisées ; utilise les habilitations de BC-01 |
+
+## 16.1. SD-13-1 — Collecte et normalisation des signaux de sécurité
+
+| Champ | Valeur |
+|---|---|
+| **Responsabilité** | Recevoir et contextualiser des signaux de sécurité utiles en conservant leur provenance et leur fraîcheur |
+| **Ne couvre pas** | La collecte exhaustive de journaux, la conservation sans limite, l'accès direct aux bases métier ou la conclusion qu'une attaque est confirmée |
+| **Traçabilité** | EF-145 |
+
+## 16.2. SD-13-2 — Triage et investigation des alertes/incidents cyber
+
+| Champ | Valeur |
+|---|---|
+| **Responsabilité** | Présenter les alertes, leur contexte disponible et leurs limites ; permettre à l'analyste de qualifier les dossiers |
+| **Ne couvre pas** | La décision d'une sanction métier, la garantie d'une détection exhaustive ou une surveillance 24/7 non décidée |
+| **Traçabilité** | EF-146 |
+
+## 16.3. SD-13-3 — Décision humaine et traçabilité de la réponse cyber
+
+| Champ | Valeur |
+|---|---|
+| **Responsabilité** | Consigner la décision d'un responsable habilité, la justification, le suivi et le résultat de la réponse |
+| **Ne couvre pas** | Le déclenchement automatique d'une mesure sur alerte seule, l'exécution directe d'une transition détenue par un autre contexte |
+| **Traçabilité** | EF-147 |
+
+---
+
+# 17. Résumé du découpage
 
 | Sous-domaine | Responsabilité condensée |
 |---|---|
@@ -464,10 +501,13 @@ Les modalités détaillées de communication restent encadrées par les capacit�
 | SD-12-1 | Billet accessible depuis le compte |
 | SD-12-2 | Envoi du billet par email |
 | SD-12-3 | Information en cas d'annulation ou de report |
+| SD-13-1 | Réception et normalisation des signaux cyber autorisés |
+| SD-13-2 | Triage humain et investigation d'une alerte/incidence système |
+| SD-13-3 | Décision, exécution autorisée par le propriétaire, et traçabilité de la réponse |
 
 ---
 
-# 17. Principes de découpage
+# 18. Principes de découpage
 
 Les propriétés suivantes régissent le découpage :
 
@@ -478,7 +518,7 @@ Les propriétés suivantes régissent le découpage :
 
 ---
 
-# 18. Statut
+# 19. Statut
 
 | Champ | Valeur |
 |---|---|

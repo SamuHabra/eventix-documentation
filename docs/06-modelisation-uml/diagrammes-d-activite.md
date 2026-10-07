@@ -124,7 +124,7 @@ if (Confirmation reçue avant expiration ?) then (non)
   stop
 else (oui)
 endif
-if (Événement payant ?) then (oui)
+if (Montant total à payer supérieur à zéro ?) then (oui)
   |Eventix (Payment)|
   :Initier le paiement;
   |Prestataire de paiement|
@@ -136,7 +136,7 @@ if (Événement payant ?) then (oui)
     stop
   else (oui)
   endif
-else (non — gratuit)
+else (non — billet gratuit sans don)
   |Eventix (Payment)|
   :Confirmer un paiement à 0 FCFA (auto-confirmé);
 endif

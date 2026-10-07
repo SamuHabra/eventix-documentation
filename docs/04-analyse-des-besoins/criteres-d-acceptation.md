@@ -273,9 +273,9 @@ alors Eventix peut envoyer le billet au participant par email.
 
 ### AC-019 — Autoriser un billet valide
 
-Étant donné qu'un billet correspond à l'événement et est valide,  
-lorsque l'agent effectue le contrôle,  
-alors l'accès est autorisé et le billet devient `USED`.
+Étant donné qu'un billet à entrée unique correspond à l'événement et est valide,
+lorsque l'agent effectue le contrôle,
+alors l'accès est autorisé et, pour un billet à entrée unique, le billet devient `USED`.
 
 ### AC-020 — Refuser un billet déjà utilisé
 
@@ -945,6 +945,244 @@ alors le retrait est traité, le solde disponible est mis à jour et l'opératio
 
 ---
 
+# 9.1 Pass multi-jours et dons optionnels
+
+## US-041 — Configurer un pass multi-jours
+
+**Use Case :** UC-027
+**Règles :** RM23, RM24, RM34
+
+### AC-091 — Définir les dates et le quota du pass
+
+Étant donné qu'un organisateur configure une catégorie de billet,
+lorsqu'il la définit comme un pass,
+alors il peut définir ses dates de validité et son nombre maximal d'entrées.
+
+### AC-092 — Respecter la disponibilité du pass
+
+Étant donné qu'un pass est proposé à la vente,
+lorsqu'un participant l'obtient ou l'achète,
+alors un billet unique est émis avec les dates de validité et le quota configurés, et une seule disponibilité correspondante est attribuée.
+
+## US-042 — Contrôler les entrées d'un pass
+
+**Use Case :** UC-028
+**Règles :** RM13, RM14, RM16, RM34
+
+### AC-093 — Décrémenter le quota à chaque entrée acceptée
+
+Étant donné qu'un pass est valide et qu'il reste des entrées,
+lorsqu'un scan d'entrée est accepté,
+alors une entrée est consommée et le participant est autorisé à entrer.
+
+### AC-094 — Consommer une autre entrée après une sortie
+
+Étant donné qu'un participant est sorti sans scan et que son pass a encore des entrées,
+lorsqu'il présente à nouveau son pass et que le scan est accepté,
+alors une entrée supplémentaire est consommée.
+
+### AC-095 — Refuser un pass épuisé ou hors validité sans consommer d'entrée
+
+Étant donné qu'un pass n'a plus d'entrée ou que la date du scan est hors de sa période de validité,
+lorsqu'un agent le scanne,
+alors l'accès est refusé et le quota ne diminue pas.
+
+### AC-096 — Ne pas dépasser le quota lors de contrôles concurrents
+
+Étant donné qu'il ne reste qu'une entrée sur un pass,
+lorsque plusieurs contrôles de ce même pass sont tentés simultanément,
+alors au plus un contrôle est accepté et le quota ne devient pas négatif.
+
+## US-043 — Configurer les dons optionnels
+
+**Use Case :** UC-030
+**Règle :** RM35
+
+### AC-097 — Activer les dons et définir des montants suggérés
+
+Étant donné qu'un organisateur configure un événement,
+lorsqu'il active les dons optionnels,
+alors il peut définir les montants suggérés proposés aux participants.
+
+## US-044 — Ajouter un don à une commande
+
+**Use Case :** UC-029
+**Règle :** RM35
+
+### AC-098 — Choisir un montant suggéré ou libre
+
+Étant donné que les dons sont activés pour un événement,
+lorsqu'un participant prépare une commande avec un billet gratuit ou payant,
+alors il peut choisir un montant suggéré, saisir un montant libre positif ou ne pas faire de don.
+
+### AC-099 — Inclure le don au paiement sans le confondre avec le billet
+
+Étant donné qu'un participant a ajouté un don supérieur à zéro,
+lorsqu'Eventix présente le récapitulatif de la commande,
+alors le don est affiché séparément du prix du billet et inclus dans le montant total à payer.
+
+### AC-100 — Préserver le parcours du billet gratuit sans don
+
+Étant donné qu'un participant demande un billet gratuit et ne choisit aucun don,
+lorsqu'il confirme sa demande,
+alors le billet suit le parcours gratuit existant et le participant ne paie rien.
+
+### AC-101 — Exiger le paiement d'un don ajouté à un billet gratuit
+
+Étant donné qu'un participant ajoute un don supérieur à zéro à une demande de billet gratuit,
+lorsqu'il confirme sa commande,
+alors le don doit être payé avant que le billet soit émis.
+
+### AC-102 — Distinguer les dons dans les rapports
+
+Étant donné qu'une commande comportant un don est finalisée,
+lorsque l'organisateur consulte les informations de vente et de suivi financier,
+alors le montant du don peut être distingué du montant des billets.
+
+### AC-103 — Enregistrer le don séparément du billet
+
+Étant donné qu'une commande comporte un don supérieur à zéro,
+lorsqu'Eventix finalise la commande,
+alors le don est enregistré séparément du billet sans créer de billet supplémentaire ni consommer de disponibilité ou d'entrée de pass.
+
+## US-045 — Configurer la billetterie hybride
+
+**Use Case :** UC-031
+**Règle :** RM36
+
+### AC-104 — Définir les modes d'accès des billets
+
+Étant donné qu'un organisateur configure un événement,
+lorsqu'il définit ses catégories de billets,
+alors il peut associer à ces catégories un accès sur place, en ligne au direct ou à la VOD, ou une combinaison de ces accès.
+
+## US-046 — Accéder à un direct ou à une VOD avec son billet
+
+**Use Case :** UC-032
+**Règle :** RM36
+
+### AC-105 — Communiquer l'accès en ligne aux détenteurs autorisés
+
+Étant donné qu'un participant détient un billet autorisant l'accès en ligne,
+lorsque le contenu associé est disponible,
+alors Eventix lui communique les informations d'accès prévues.
+
+### AC-106 — Refuser l'accès en ligne à un billet non éligible
+
+Étant donné qu'un billet n'autorise pas l'accès au direct ou à la VOD,
+lorsque son détenteur tente d'obtenir les informations d'accès,
+alors Eventix ne lui communique pas les informations d'accès réservées au contenu en ligne.
+
+## US-047 — Créer et appliquer des codes promotionnels
+
+**Use Case :** UC-033
+**Règle :** RM37
+
+### AC-107 — Appliquer la réduction d'un code valide
+
+Étant donné qu'un code promotionnel est actif et applicable à la commande,
+lorsque le participant le saisit,
+alors la réduction configurée est affichée et prise en compte dans le montant à payer.
+
+### AC-108 — Ne pas appliquer un code invalide ou non applicable
+
+Étant donné qu'un code est invalide, inactif ou non applicable à la commande,
+lorsque le participant le saisit,
+alors le montant à payer n'est pas réduit et le participant en est informé.
+
+## US-048 — Suivre les ventes issues de liens partagés
+
+**Use Case :** UC-034
+**Règle :** RM38
+
+### AC-109 — Associer une commande finalisée à sa source de suivi
+
+Étant donné qu'un participant accède à l'événement par un lien de suivi,
+lorsqu'il finalise une commande,
+alors cette commande est attribuée à la source associée au lien selon la règle d'attribution définie.
+
+### AC-110 — Consulter les résultats par lien de suivi
+
+Étant donné qu'un événement dispose de plusieurs liens de suivi,
+lorsque l'organisateur consulte les statistiques,
+alors il peut distinguer les visites, commandes finalisées et montants attribués à chaque lien.
+
+## US-049 — Configurer un plan de salle interactif
+
+**Use Case :** UC-035
+**Règle :** RM39
+
+### AC-111 — Afficher le plan et l'état des sièges
+
+Étant donné qu'un organisateur a configuré un plan de salle et ses places numérotées,
+lorsqu'un participant consulte l'offre de billetterie,
+alors il peut consulter le plan interactif et distinguer les places disponibles des places indisponibles.
+
+## US-050 — Choisir une place sur le plan de salle
+
+**Use Case :** UC-036
+**Règle :** RM39
+
+### AC-112 — Associer la place sélectionnée au billet
+
+Étant donné qu'un participant sélectionne une place disponible,
+lorsque sa commande est finalisée,
+alors la place sélectionnée est associée à son billet.
+
+### AC-113 — Empêcher la vente multiple d'une même place
+
+Étant donné que plusieurs participants tentent de réserver simultanément la même place,
+lorsque leurs commandes sont finalisées,
+alors au plus une commande obtient cette place et les autres participants doivent en sélectionner une autre.
+
+### AC-114 — Configurer la réduction et les conditions d'un code
+
+Étant donné qu'un organisateur configure la billetterie d'un événement,
+lorsqu'il crée un code promotionnel,
+alors il peut définir la réduction et les conditions selon lesquelles le code est applicable.
+
+## US-051 — Consulter les alertes de cybersécurité
+
+**Use Case :** UC-037 · **Règle :** RM40
+
+### AC-115 — Présenter les alertes et leur contexte disponible
+
+Étant donné qu'Eventix a détecté un signal correspondant à une règle de détection configurée,
+lorsque l'analyste cybersécurité consulte le tableau de bord,
+alors il peut voir l'alerte, son horodatage, sa catégorie, sa sévérité, son état et les actifs concernés lorsque ces informations sont disponibles.
+
+### AC-116 — Rendre visibles les limites de couverture
+
+Étant donné que les signaux disponibles ne couvrent pas toutes les attaques possibles,
+lorsque le tableau de bord présente les alertes et indicateurs,
+alors il ne les présente pas comme une preuve exhaustive de sécurité ou comme la garantie qu'aucune attaque n'est en cours.
+
+## US-052 — Analyser et qualifier un incident cybersécurité
+
+**Use Case :** UC-037 · **Règle :** RM40
+
+### AC-117 — Distinguer une alerte d'une attaque confirmée
+
+Étant donné qu'une nouvelle alerte est créée,
+lorsque l'analyste l'examine,
+alors il peut consigner une qualification et une justification sans qu'une alerte seule soit présentée comme une attaque confirmée.
+
+## US-053 — Autoriser et tracer une réponse à un incident
+
+**Use Case :** UC-037 · **Règle :** RM40
+
+### AC-118 — Exiger une décision humaine pour les mesures
+
+Étant donné qu'une alerte ou un incident est enregistré,
+lorsqu'aucun responsable humain habilité n'a décidé d'une mesure,
+alors Eventix ne déclenche pas automatiquement de confinement, suspension ou sanction.
+
+### AC-119 — Tracer la décision et le résultat d'une mesure
+
+Étant donné qu'un responsable humain habilité décide d'une mesure,
+lorsqu'il consigne la décision,
+alors le dossier conserve l'auteur, la justification, le périmètre, la date et le résultat de la mesure.
+
 # 10. User Stories à statut À PRÉCISER
 
 Les User Stories suivantes ne doivent pas recevoir de critères définitifs tant que les décisions métier correspondantes ne sont pas validées :
@@ -1198,6 +1436,10 @@ Implémentation
 | US-036 | AC-081 → AC-083 |
 | US-037 | AC-084 → AC-086 |
 | US-038 | AC-087 → AC-090 |
+| US-041 | AC-091 → AC-092 |
+| US-042 | AC-093 → AC-096 |
+| US-043 | AC-097 |
+| US-044 | AC-098 → AC-103 |
 | US-039 | À préciser / hors MVP à confirmer |
 | US-040 | À préciser / hors MVP à confirmer |
 

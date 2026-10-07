@@ -37,6 +37,10 @@ Les indicateurs pourront évoluer avec le produit et les différentes versions d
 - Nombre de billets utilisés.
 - Taux d'utilisation des billets.
 - Taux d'échec des paiements.
+- Répartition des ventes et des revenus par mode d'accès (sur place, direct, VOD).
+- Nombre de places numérotées vendues et disponibles.
+- Réductions appliquées par code promotionnel.
+- Visites, commandes et montants attribués par lien de suivi, sous réserve de la règle d'attribution retenue.
 
 ### Fidélisation
 

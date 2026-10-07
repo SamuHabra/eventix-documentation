@@ -156,6 +156,8 @@ Elle couvre notamment :
 - les prix ;
 - les quantités disponibles ;
 - les places ou sièges lorsqu'ils sont configurés ;
+- les modes d'accès sur place, en direct ou en VOD ;
+- les codes promotionnels et les liens de suivi des ventes ;
 - les conditions d'accès ;
 - la disponibilité.
 
@@ -210,6 +212,8 @@ Une confirmation de paiement ne doit pas provoquer plusieurs créations de bille
 ## 4.5 Gestion du billet
 
 Le billet représente l'accès attribué au participant.
+
+Un billet standard est utilisable une fois. Un billet de type pass peut autoriser plusieurs entrées pendant ses dates de validité ; chaque contrôle d'entrée accepté consomme une entrée de son quota, sans scan de sortie.
 
 Son cycle de vie est lié à :
 
@@ -269,6 +273,8 @@ Le système doit permettre de déterminer notamment si un billet est :
 - annulé ;
 - utilisable ou non.
 
+Pour un pass, le contrôle vérifie également que la date est valide et qu'il reste au moins une entrée. Un contrôle accepté consomme une entrée ; un contrôle refusé n'en consomme aucune.
+
 Une contrainte métier importante concerne également la rapidité du contrôle.
 
 Le système doit pouvoir fournir une réponse suffisamment rapidement lors du scan.
@@ -303,6 +309,10 @@ Cela comprend notamment :
 - les informations nécessaires au suivi de l'activité.
 
 La granularité exacte de cette capacité devra être précisée dans les travaux DDD ultérieurs.
+
+## 4.10 Don optionnel
+
+Le don est une contribution financière facultative ajoutée à une commande de billet. Il est enregistré séparément du prix du billet et n'accorde aucun droit d'accès ni disponibilité.
 
 ---
 
@@ -1093,9 +1103,11 @@ Eventix ne modélise pas l'ensemble de l'écosystème événementiel. Il modéli
 **Activités métier :**
 
 - Configuration des espaces, zones et places.
+- Configuration d'un plan de salle interactif avec des places numérotées sélectionnables.
 - Association des catégories de billets aux disponibilités.
 - Gestion des capacités par zone.
 - Protection contre la réduction de capacité incompatible avec les billets déjà vendus.
+- Réservation concurrente d'une place afin d'empêcher sa vente multiple.
 - Suivi des disponibilités en temps réel.
 
 **Pourquoi ce domaine :** La disponibilité est la ressource fondamentale que la plateforme gère. C'est ici que réside le risque de survente.
@@ -1137,6 +1149,7 @@ Eventix ne modélise pas l'ensemble de l'écosystème événementiel. Il modéli
 - Traitement des confirmations.
 - Gestion des échecs.
 - Garantie de l'idempotence.
+- Application des réductions valides avant le paiement.
 - Réconciliation des paiements tardifs.
 
 **Pourquoi ce domaine :** Le paiement est le moment de conversion. Sa fiabilité conditionne directement le revenu de la plateforme.
@@ -1157,6 +1170,7 @@ Eventix ne modélise pas l'ensemble de l'écosystème événementiel. Il modéli
 - Émission d'un billet.
 - Génération du QR Code de contrôle.
 - Association du billet à un événement et à un propriétaire.
+- Conservation des modes d'accès autorisés et de la place numérotée éventuelle.
 - Garantie de l'unicité du propriétaire actif.
 - Consultation et téléchargement du billet.
 - Transfert de billet entre participants.
@@ -1170,7 +1184,7 @@ Eventix ne modélise pas l'ensemble de l'écosystème événementiel. Il modéli
 
 ## 6.7 Domaine — Distribution
 
-**Responsabilité :** Mettre le billet à disposition du participant et le distribuer via les canaux appropriés.
+**Responsabilité :** Mettre le billet à disposition du participant et communiquer les informations d'accès au direct ou à la VOD aux détenteurs autorisés.
 
 **Acteurs concernés :** Participant, Eventix.
 
@@ -1339,6 +1353,16 @@ Eventix ne modélise pas l'ensemble de l'écosystème événementiel. Il modéli
 
 ---
 
+## 6.13 Domaine — Cybersécurité opérationnelle
+
+**Responsabilité :** Superviser les signaux de sécurité du système Eventix, aider à qualifier les alertes et incidents, et tracer les décisions humaines de réponse.
+
+**Acteurs concernés :** Analyste cybersécurité, responsable humain habilité, modules propriétaires des actifs.
+
+**Limite :** ce domaine concerne les intrusions et atteintes techniques au système. Il ne remplace ni la sécurité et confiance métier (fraude événementielle, vérification, sanctions), ni les statistiques et l'observabilité métier. L'alerte ne confirme pas seule une attaque et ne déclenche pas automatiquement une action.
+
+**Catégorie DDD :** Supporting Domain — capacité interne de soutien, incluse au MVP par EF-145 à EF-147. Sa frontière logicielle est BC-13 ; le déploiement reste indéterminé.
+
 # 7. Core Domain
 
 Les domaines suivants constituent le **Core Domain** d'Eventix — ce qui apporte la valeur distinctive et différencie la plateforme cite🛠web_search:2#3:~:text=Qu'est-ce qui apporte de la valeur...sépare de la concurrence :
@@ -1454,6 +1478,8 @@ Le langage ubiquitaire d'Eventix est le vocabulaire partagé par l'ensemble de l
 | **Réservation** | Blocage temporaire d'une disponibilité pendant cinq minutes maximum, avant finalisation de l'achat. |
 | **Disponibilité** | Unité de capacité (place, zone, catégorie) pouvant être attribuée à un billet. |
 | **Catégorie de billet** | Classification des billets d'un événement (ex: VIP, Standard, Early Bird) avec prix et capacité associés. |
+| **Pass multi-jours** | Catégorie de billet valable sur des dates définies d'un événement et autorisant un nombre maximal d'entrées ; chaque entrée acceptée consomme une unité du quota. |
+| **Don optionnel** | Contribution facultative associée à une commande, enregistrée séparément du billet et sans droit d'accès. |
 | **QR Code** | Code-barres bidimensionnel généré pour chaque billet, servant à l'identification et au contrôle d'accès. |
 | **Contrôle d'accès** | Opération de vérification du billet à l'entrée d'un événement, aboutissant à une autorisation ou un refus. |
 | **Validation** | Action de marquer un billet comme `USED` après un contrôle d'accès réussi. |
@@ -1808,7 +1834,7 @@ La vue d'ensemble du domaine doit respecter les propriétés suivantes :
 
 ### Alignement avec les exigences fonctionnelles
 
-Cette vue d'ensemble du domaine est directement dérivée des 129 exigences fonctionnelles (`EF-001` à `EF-129`). Chaque domaine identifié ici regroupe les exigences qui partagent une responsabilité métier commune, sans anticiper l'architecture technique future.
+Cette vue d'ensemble du domaine est directement dérivée des 147 exigences fonctionnelles (`EF-001` à `EF-147`). La supervision cybersécurité (EF-145 à EF-147) constitue un domaine interne MVP de soutien, modélisé par DOM-13 / BC-13 et distinct de Trust & Safety métier. Son déploiement et ses intégrations restent à définir. Chaque domaine regroupe les exigences relevant de sa responsabilité sans anticiper les choix techniques.
 
 ### Distillation
 
@@ -2561,7 +2587,7 @@ l'intégration des contraintes spécifiques du marché camerounais ;
 
 l'exigence de traçabilité des opérations métier.
 
-Le modèle de domaine présenté dans ce document identifie douze domaines métier, leurs responsabilités, leurs relations et les invariants qu'ils doivent préserver.
+Le modèle de domaine présenté dans ce document identifie les douze domaines métier initiaux, complétés par le domaine interne de cybersécurité opérationnelle (DOM-13 / BC-13) introduit avec EF-145 à EF-147. Ce domaine est distinct de la sécurité et confiance métier, et son affectation logique est répercutée dans la phase 07.
 
 Il constitue la fondation pour les documents détaillés de cette phase :
 

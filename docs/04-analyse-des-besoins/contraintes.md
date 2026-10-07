@@ -397,6 +397,8 @@ Les contrôles réalisés pendant le mode dégradé sont synchronisés lorsque l
 
 # 8. Contraintes de sécurité et de confiance
 
+Les contraintes de cette section portent principalement sur la confiance métier : analyse des signalements, proportionnalité des décisions et traçabilité des opérations. La cybersécurité du système Eventix (comptes, données, services et incidents) est cadrée séparément dans la [découverte cybersécurité de la phase 03](../03-decouverte-du-metier/cybersecurite-eventix/README.md) et formalisée par les exigences non fonctionnelles ; les deux périmètres se complètent sans se remplacer.
+
 ## C20 — Un signalement ne constitue pas une fraude confirmée
 
 Un signalement doit être analysé avant toute mesure définitive.

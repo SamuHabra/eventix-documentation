@@ -25,9 +25,9 @@
 
 # 1. Objectif
 
-Ce document identifie, parmi les trente-six sous-domaines définis dans `sous-domaines.md`, ceux qui constituent le cœur différenciant d'Eventix au regard de la proposition de valeur établie dans `proposition-de-valeur.md`. Les autres sont classés comme sous-domaines de soutien ou génériques.
+Ce document identifie, parmi les sous-domaines définis dans `sous-domaines.md`, ceux qui constituent le cœur différenciant d'Eventix au regard de la proposition de valeur établie dans `proposition-de-valeur.md`. Les autres sont classés comme sous-domaines de soutien ou génériques.
 
-Il ne redéfinit ni les sous-domaines, ni les promesses : il établit exclusivement le lien entre les deux et hiérarchise l'attention à leur porter.
+Il ne redéfinit ni les sous-domaines, ni les promesses : il établit exclusivement le lien entre les deux et hiérarchise l'attention à leur porter. La supervision cybersécurité ajoutée comme capacité MVP relève du soutien et ne constitue pas une promesse différenciante destinée aux organisateurs.
 
 ---
 
@@ -80,6 +80,7 @@ Un sous-domaine cœur reçoit deux attentions particulières : sa conception est
 | OBSERVATION | SD-11-2 | **Cœur** | Porte le pilier « analyse des événements » : la promesse « mieux comprendre » des organisateurs |
 | OBSERVATION | SD-11-1, SD-11-3 | Soutien | Alimentent le cœur sans être distinctifs |
 | COMMUNICATION | SD-12-1 à SD-12-3 | Générique | Canaux standards, interchangeables |
+| CYBERSECURITY OPERATIONS | SD-13-1 à SD-13-3 | Soutien | Capacité interne de protection et de réponse, nécessaire au fonctionnement sûr du système mais distincte de la proposition de valeur commerciale |
 
 ---
 
@@ -108,7 +109,7 @@ Un sous-domaine cœur reçoit deux attentions particulières : sa conception est
 
 La proposition de valeur établit cinq piliers de différenciation, dont « l'interaction avec les participants » (quiz en direct, votes en temps réel, sondages) et la promesse de vivre l'événement, formulée pour les participants.
 
-**Le découpage en sous-domaines ne couvre aucun de ces deux éléments.** Aucun des douze domaines, et donc aucun des trente-six sous-domaines, n'est chargé de l'expérience interactive pendant l'événement.
+**Le découpage en sous-domaines ne couvre aucun de ces deux éléments.** Aucun des treize domaines n'est chargé de l'expérience interactive pendant l'événement ; le domaine cybersécurité ajouté est indépendant de cette promesse.
 
 Trois interprétations sont possibles, à trancher par l'équipe :
 

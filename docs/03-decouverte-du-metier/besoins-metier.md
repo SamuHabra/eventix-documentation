@@ -398,6 +398,28 @@ Cette affectation permet notamment de savoir qui réalise les contrôles à cett
 
 Eventix doit permettre à l'organisateur de suivre les participants associés à son événement.
 
+---
+
+# 11. Besoins complémentaires du MVP
+
+## B35 — Gérer la billetterie hybride
+
+Eventix doit permettre à l'organisateur de proposer, pour un même événement, des billets donnant accès sur place et des billets donnant accès à un direct ou à un contenu vidéo à la demande (VOD).
+
+Les droits d'accès au contenu en ligne doivent être associés au billet éligible et communiqués à son détenteur. L'hébergement et la diffusion du contenu peuvent être assurés par un prestataire externe.
+
+## B36 — Promouvoir et mesurer les ventes
+
+Eventix doit permettre à l'organisateur de créer des codes promotionnels et des liens de suivi partageables avec des partenaires ou influenceurs.
+
+L'organisateur doit pouvoir définir les réductions et mesurer les ventes finalisées attribuées à chaque lien de suivi.
+
+## B37 — Choisir une place assise
+
+Pour les événements avec placement numéroté, Eventix doit permettre à l'organisateur de configurer un plan de salle interactif et au participant de choisir une place encore disponible.
+
+Une place ne peut être attribuée qu'à une seule commande finalisée.
+
 Le système doit distinguer notamment :
 
 ```text
@@ -407,6 +429,14 @@ Participant attendu
       ≠
 Participant présent
 ```
+
+## B38 — Superviser la cybersécurité du système Eventix
+
+Eventix doit fournir aux personnes internes autorisées un service de supervision permettant de détecter et d'analyser des signaux d'intrusion ou d'activité technique suspecte, de consulter les alertes dans un tableau de bord et de suivre leur traitement.
+
+La détection ne constitue pas à elle seule la confirmation d'une attaque. Dans le périmètre retenu, un humain habilité analyse les alertes et décide des mesures ; le système ne déclenche pas automatiquement de confinement ou de sanction.
+
+Ce besoin concerne la cybersécurité du système Eventix. Il est distinct de la confiance métier relative aux organisateurs, événements, billets et contrôles d'accès.
 
 ---
 

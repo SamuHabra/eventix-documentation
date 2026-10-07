@@ -54,7 +54,7 @@ Chaque question possède un statut.
 
 ## QMO-001 — Quels moyens de paiement seront disponibles dans le MVP ?
 
-**Statut :** `OPEN`  
+**Statut :** `OPEN`
 **Priorité :** `CRITICAL`
 
 Questions à déterminer :
@@ -74,7 +74,7 @@ Le choix des moyens de paiement influence directement le parcours d'achat et le 
 
 ## QMO-002 — Quelle est la politique exacte concernant les frais de paiement ?
 
-**Statut :** `OPEN`  
+**Statut :** `OPEN`
 **Priorité :** `HIGH`
 
 À déterminer :
@@ -90,7 +90,7 @@ Le choix des moyens de paiement influence directement le parcours d'achat et le 
 
 ## QMO-003 — Quelle commission Eventix applique-t-il ?
 
-**Statut :** `OPEN`  
+**Statut :** `OPEN`
 **Priorité :** `CRITICAL`
 
 À déterminer :
@@ -736,3 +736,109 @@ Il faut définir précisément ce que signifie :
 > « Événement vérifié »
 
 et ce qu'Eventix garantit réellement.
+
+## QMO-045 — Quel est le traitement financier des dons ?
+
+**Statut :** `OPEN`
+**Priorité :** `HIGH`
+
+À déterminer :
+
+* le bénéficiaire des dons ;
+* l'application éventuelle de frais ou de commissions ;
+* le traitement des dons lors de la clôture financière et du versement à l'organisateur.
+
+## QMO-046 — Un don est-il remboursable ?
+
+**Statut :** `OPEN`
+**Priorité :** `HIGH`
+
+À déterminer notamment si un don doit être remboursé lors de l'annulation ou du report d'un événement, et s'il suit les mêmes règles que le prix du billet.
+
+## QMO-047 — Quel traitement fiscal et justificatif s'applique aux dons ?
+
+**Statut :** `OPEN`
+**Priorité :** `HIGH`
+
+Les obligations fiscales, la qualification du don et les justificatifs éventuellement remis au participant doivent être déterminés avant la mise en production.
+
+## QMO-048 — Comment les dates de validité d'un pass évoluent-elles après un report ?
+
+**Statut :** `OPEN`
+**Priorité :** `HIGH`
+
+Il faut préciser comment les dates de validité et les entrées restantes d'un pass sont traitées lorsqu'un événement est reporté ou que ses dates changent.
+
+## QMO-049 — Quel prestataire et quel mode d'accès seront utilisés pour le direct et la VOD ?
+
+**Statut :** `OPEN`
+**Priorité :** `HIGH`
+
+À définir : hébergement du contenu, prestataire de diffusion, mode de protection des liens ou identifiants d'accès, durée de disponibilité de la VOD et responsabilités de support en cas d'indisponibilité.
+
+## QMO-050 — Quelles conditions s'appliquent aux codes promotionnels ?
+
+**Statut :** `OPEN`
+**Priorité :** `HIGH`
+
+À arbitrer : formats de réduction autorisés, limites d'utilisation, périodes de validité, cumul de codes, catégories de billets éligibles et éventuel traitement financier d'un partenariat. Les réductions et conditions doivent rester définies par l'organisateur.
+
+## QMO-051 — Comment les ventes sont-elles attribuées aux liens de suivi ?
+
+**Statut :** `OPEN`
+**Priorité :** `HIGH`
+
+À déterminer : durée d'attribution après clic, règle en cas de plusieurs liens consultés, données conservées et statistiques rendues visibles aux organisateurs et aux partenaires.
+
+## QMO-052 — Comment le plan de salle interactif est-il créé et maintenu ?
+
+**Statut :** `OPEN`
+**Priorité :** `HIGH`
+
+À préciser : outil de création intégré ou import d'un plan existant, représentation des zones et des sièges, mise à jour des disponibilités et gestion des places bloquées ou accessibles.
+
+# 20. Cybersécurité du système Eventix
+
+Ces questions portent sur la protection du système Eventix. Elles sont distinctes des questions de confiance métier (vérification d'organisateurs, fraude événementielle et contrôle des billets). Les mécanismes techniques seront conçus dans les phases ultérieures.
+
+## QMO-053 — Quels impacts métier et niveaux de criticité retenir pour les actifs Eventix ?
+
+**Statut :** `OPEN`
+**Priorité :** `HIGH`
+
+À valider avec les responsables métier : les actifs et informations prioritaires, leur sensibilité, les impacts acceptables en cas de divulgation, altération ou indisponibilité, ainsi que les responsabilités de leur protection. Cette décision doit notamment tenir compte des comptes, données personnelles, billets, paiements, soldes, accès vidéo et services nécessaires au contrôle.
+
+## QMO-054 — Qui coordonne la réponse à un incident de cybersécurité ?
+
+**Statut :** `OPEN`
+**Priorité :** `HIGH`
+
+À déterminer : rôles de détection, qualification, escalade, décision de confinement, correction, conservation des éléments utiles et communication aux parties concernées. Les obligations et délais de notification applicables doivent être confirmés avec les personnes compétentes.
+
+## QMO-055 — Quelles obligations de protection des données s'appliquent à Eventix ?
+
+**Statut :** `OPEN`
+**Priorité :** `HIGH`
+
+À établir avec les responsables compétents : obligations légales applicables au marché desservi, rôles d'Eventix et des organisateurs, information des personnes, droits des personnes, sous-traitants et transferts éventuels. Cette question complète QMO-041 sur la durée de conservation ; elle ne présume pas qu'un régime juridique particulier s'applique sans vérification.
+
+## QMO-056 — Quel cadre d'autorisation encadre les évaluations offensives ?
+
+**Statut :** `OPEN`
+**Priorité :** `HIGH`
+
+Avant tout test, déterminer qui peut l'autoriser, quels systèmes et environnements sont dans le périmètre, quelles périodes et limites d'impact s'appliquent, comment arrêter le test en urgence, à qui signaler un constat et comment suivre sa correction. Aucun test ne peut être déduit de cette question ou de la présence du dossier cybersécurité.
+
+## QMO-057 — Quels signaux et niveaux de détection sont prioritaires au MVP ?
+
+**Statut :** `OPEN`
+**Priorité :** `HIGH`
+
+À définir avec les responsables cybersécurité : les catégories de signaux à couvrir, les sources effectivement disponibles, les priorités et les niveaux de sévérité. Les objectifs de couverture, seuils, délais d'analyse et tolérance aux faux positifs doivent être fixés à partir du risque et des moyens opérationnels. Eventix ne doit pas prétendre détecter toutes les attaques.
+
+## QMO-058 — Quels profils peuvent consulter ou traiter les alertes cybersécurité ?
+
+**Statut :** `OPEN`
+**Priorité :** `HIGH`
+
+À déterminer : rôles de l'analyste, du responsable autorisant les mesures et de l'administrateur de la plateforme ; données visibles par chacun ; séparation des tâches ; et conditions d'accès aux dossiers d'incident. L'identité et la justification de toute décision doivent pouvoir être auditées.

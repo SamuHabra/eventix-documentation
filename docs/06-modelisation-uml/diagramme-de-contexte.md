@@ -122,9 +122,11 @@ EVENTIX -down-> NOTIF : notification à envoyer
 NOTIF -down-> EVENTIX : accusé de réception
 
 note bottom of EVENTIX
-  Événement gratuit : le flux vers PSP
+  Billet gratuit sans don : le flux vers PSP
   n'est pas déclenché (paiement à 0 XAF
   auto-confirmé en interne).
+  Si un don positif est ajouté à un billet gratuit,
+  le flux vers PSP est déclenché pour le montant du don.
 end note
 
 @enduml

@@ -83,6 +83,8 @@ Participant	Découvrir un événement, obtenir et utiliser un billet
 Organisateur	Gérer ses événements et suivre leur activité
 Agent de contrôle	Contrôler les billets à l'entrée
 Administrateur	Vérifier, analyser et traiter les situations sensibles
+Analyste cybersécurité Eventix	Consulter les alertes et analyser les incidents cyber
+Responsable humain habilité	Décider et suivre les mesures de réponse à un incident cyber
 4.2 Acteurs secondaires
 
 Un acteur secondaire participe à un Use Case sans être nécessairement propriétaire de l'objectif métier.
@@ -743,7 +745,8 @@ Eventix vérifie que le billet correspond à l'événement.
 Eventix vérifie son statut.
 Eventix vérifie s'il a déjà été utilisé.
 Si les conditions sont satisfaites, le contrôle est accepté.
-Le billet devient USED.
+Pour un billet standard, le billet devient USED.
+Pour un pass, une entrée est consommée et le billet ne devient USED que lorsque son quota est épuisé.
 L'accès est autorisé.
 Le contrôle est enregistré.
 Scénario alternatif — Billet déjà utilisé
@@ -762,8 +765,8 @@ Le contrôle est refusé.
 L'accès est refusé.
 Le contrôle est enregistré.
 Règles métier
-RM13 — Un billet déjà utilisé est refusé.
-RM14 — Un billet ne peut être validé qu'une seule fois.
+RM13 — Un billet à entrée unique déjà utilisé est refusé.
+RM14 — Une même entrée ne peut être consommée qu'une seule fois.
 RM15 — Une affectation physique n'est pas automatiquement une restriction de billet.
 RM16 — Les contrôles doivent être traçables.
 RM17 — Billet et présence sont deux informations différentes.
@@ -775,9 +778,10 @@ Billet valide
     ↓
 Accès autorisé
     ↓
-Billet USED
-    ↓
-Présence constatée
+Contrôle enregistré
+
+Pour un billet standard, le billet passe à USED.
+Pour un pass, une unité du quota est consommée.
 Traçabilité
 Besoins : B21, B22, B23, B24
 User Stories : US-025 à US-028
@@ -1204,7 +1208,8 @@ Enregistrer qu'un billet a été utilisé et que l'accès a été autorisé.
 Scénario
 Le contrôle du billet est accepté.
 L'accès est autorisé.
-Le billet passe à USED.
+Pour un billet standard, le billet passe à USED.
+Pour un pass, une entrée est consommée et le billet passe à USED lorsque le quota est épuisé.
 La présence du participant peut être constatée.
 Le contrôle est enregistré.
 Règles métier
@@ -1212,6 +1217,265 @@ RM13
 RM14
 RM16
 RM17
+UC-027 — Configurer un pass multi-jours
+
+Acteur principal : Organisateur
+
+Objectif :
+
+Proposer une catégorie de billet valable sur plusieurs dates d'un événement, avec un quota d'entrées défini.
+
+Scénario nominal
+L'organisateur active une catégorie de type pass.
+L'organisateur définit ses dates de validité et son nombre maximal d'entrées.
+Eventix associe le pass à une disponibilité et à un prix.
+Le pass est proposé à la vente selon les conditions de l'événement.
+
+Postcondition :
+
+Les règles de validité et le quota d'entrées sont connus pour les billets émis dans cette catégorie.
+
+Règles métier : RM23, RM24, RM34
+User Story : US-041
+
+UC-028 — Contrôler une entrée avec un pass
+
+Acteur principal : Agent de contrôle
+
+Objectif :
+
+Autoriser une entrée lorsque le pass est valide et qu'il reste une entrée à consommer.
+
+Scénario nominal
+L'agent scanne le billet à l'entrée.
+Eventix vérifie l'événement, les dates de validité et le quota restant.
+Si ces vérifications réussissent, Eventix autorise l'entrée et consomme une unité du quota.
+Eventix enregistre le contrôle.
+
+Scénarios alternatifs
+Si le quota est épuisé ou si le pass est hors de ses dates de validité, Eventix refuse l'entrée sans consommer de quota.
+Une sortie n'est pas scannée ; chaque nouvelle entrée acceptée consomme une unité supplémentaire.
+
+Règles métier : RM13, RM14, RM16, RM34
+User Story : US-042
+
+UC-029 — Ajouter un don optionnel à une commande
+
+Acteur principal : Participant
+
+Objectif :
+
+Ajouter une contribution facultative au montant d'une commande de billet.
+
+Scénario nominal
+L'organisateur a activé les dons et configuré des montants suggérés.
+Le participant choisit un montant suggéré ou saisit un montant libre, ou choisit de ne pas donner.
+Eventix présente séparément le montant du billet et celui du don.
+Si un don supérieur à zéro est choisi, le participant paie le montant total par le moyen de paiement disponible.
+Après confirmation du paiement, Eventix finalise la commande et enregistre le don séparément du billet.
+
+Scénario alternatif — Billet gratuit
+Sans don, le billet gratuit suit le parcours existant, sans paiement à effectuer par le participant ; toute confirmation interne d'un montant nul reste inchangée.
+Avec un don supérieur à zéro, le montant du don doit être payé avant la finalisation de la commande.
+
+Postcondition :
+
+Le don n'émet pas de billet supplémentaire et ne consomme pas de disponibilité.
+
+Règles métier : RM03, RM05, RM35
+User Story : US-044
+UC-030 — Configurer les dons optionnels
+
+Acteur principal : Organisateur
+
+Objectif :
+
+Activer les dons pour un événement et définir les montants suggérés proposés aux participants.
+
+Scénario nominal
+L'organisateur configure l'événement.
+L'organisateur active les dons optionnels.
+L'organisateur définit les montants suggérés.
+Eventix rend les options de don disponibles dans le parcours de commande de l'événement.
+
+Scénario alternatif — Dons désactivés
+L'organisateur laisse les dons désactivés.
+Eventix ne propose pas d'option de don aux participants.
+
+Règle métier : RM35
+User Story : US-043
+
+UC-031 — Configurer les accès d'un événement hybride
+
+Acteur principal : Organisateur
+
+Objectif :
+
+Proposer des billets autorisant l'accès sur place, en ligne ou les deux.
+
+Scénario nominal
+L'organisateur configure l'événement.
+L'organisateur active les modes d'accès disponibles : sur place, direct et/ou VOD.
+L'organisateur associe un ou plusieurs modes d'accès aux catégories de billets.
+Eventix publie ces droits d'accès avec l'offre de billetterie.
+
+Postcondition :
+
+Les catégories et billets indiquent les modes d'accès autorisés.
+
+Règle métier : RM36
+User Story : US-045
+
+UC-032 — Accéder au contenu en ligne avec un billet
+
+Acteur principal : Participant
+
+Objectif :
+
+Accéder au direct ou à la VOD lorsque son billet donne ce droit.
+
+Scénario nominal
+Le participant détient un billet autorisant l'accès au contenu en ligne.
+Eventix lui communique les informations d'accès selon le canal prévu.
+Le participant rejoint le direct ou consulte la VOD.
+
+Scénario alternatif — Billet non éligible
+Si le billet n'autorise pas l'accès en ligne, Eventix ne communique pas les informations réservées au contenu et refuse l'accès via Eventix.
+
+Postcondition :
+
+L'accès en ligne est limité aux détenteurs de billets éligibles.
+
+Règle métier : RM36
+User Story : US-046
+
+UC-033 — Créer et appliquer un code promotionnel
+
+Acteurs principaux : Organisateur, Participant
+
+Objectif :
+
+Créer une réduction et l'appliquer à une commande éligible.
+
+Scénario nominal
+L'organisateur crée un code, définit sa réduction et ses conditions d'application.
+Le participant saisit le code dans sa commande.
+Eventix vérifie que le code est actif et applicable à la commande.
+Eventix applique la réduction et présente le nouveau montant à payer.
+
+Scénario alternatif — Code invalide ou non applicable
+Eventix informe le participant que le code ne peut pas être appliqué et conserve le montant non réduit.
+
+Postcondition :
+
+Le montant payé et le code utilisé sont associés à la commande finalisée.
+
+Règle métier : RM37
+User Story : US-047
+
+UC-034 — Créer un lien de suivi et consulter ses résultats
+
+Acteur principal : Organisateur
+
+Objectif :
+
+Mesurer les commandes finalisées provenant d'un partenaire, d'un influenceur ou d'une campagne.
+
+Scénario nominal
+L'organisateur crée un lien de suivi et l'associe à une source.
+Le partenaire ou l'influenceur partage le lien.
+Un participant visite l'événement et finalise éventuellement une commande.
+Eventix associe la visite et la commande à la source du lien selon la règle d'attribution applicable.
+L'organisateur consulte les visites, commandes et montants attribués.
+
+Postcondition :
+
+Les ventes attribuées à chaque source sont consultables séparément.
+
+Règle métier : RM38
+User Story : US-048
+
+UC-035 — Configurer un plan de salle interactif
+
+Acteur principal : Organisateur
+
+Objectif :
+
+Définir les places numérotées et les rendre sélectionnables sur un plan de salle.
+
+Scénario nominal
+L'organisateur crée ou importe le plan de salle.
+L'organisateur représente les sièges et les associe aux zones ou catégories de billets.
+Eventix rend le plan consultable avec l'état de disponibilité des sièges.
+
+Postcondition :
+
+Le plan de salle et les sièges sont associés à l'événement et à son inventaire.
+
+Règle métier : RM39
+User Story : US-049
+
+UC-036 — Choisir et réserver une place numérotée
+
+Acteur principal : Participant
+
+Objectif :
+
+Sélectionner une place disponible pour la commande.
+
+Scénario nominal
+Le participant consulte le plan de salle interactif.
+Le participant sélectionne une place indiquée comme disponible.
+Eventix réserve temporairement cette place dans le cadre de la réservation.
+Après finalisation de la commande, Eventix associe la place au billet émis.
+
+Scénario alternatif — Place déjà réservée
+Si la place a été réservée ou vendue entre l'affichage et la confirmation, Eventix refuse cette attribution et demande au participant d'en choisir une autre.
+
+Postcondition :
+
+Une même place ne peut pas être attribuée à plusieurs commandes finalisées.
+
+Règle métier : RM39
+User Story : US-050
+
+UC-037 — Superviser et traiter un incident de cybersécurité
+
+Acteurs principaux : Analyste cybersécurité Eventix, Responsable humain habilité
+
+Objectif :
+
+Détecter et examiner une activité technique potentiellement malveillante, puis enregistrer une décision humaine de réponse.
+
+Déclencheur :
+
+Eventix rend une alerte disponible à partir de signaux de sécurité configurés et effectivement observables.
+
+Scénario nominal
+
+1. L'analyste consulte le tableau de bord et sélectionne une alerte.
+2. Eventix présente les détails disponibles, les actifs concernés et les éléments de contexte liés.
+3. L'analyste examine l'alerte, la rapproche d'autres alertes pertinentes et consigne son analyse.
+4. L'analyste qualifie le dossier : à investiguer, incident confirmé, faux positif ou non concluant.
+5. Si une réponse est nécessaire, le responsable humain habilité examine l'analyse et décide des mesures.
+6. Eventix consigne l'auteur, la décision, la justification, le périmètre et le résultat de la mesure.
+7. Le dossier est suivi jusqu'à sa clôture, avec son historique.
+
+Scénario alternatif — Faux positif ou signal non concluant
+
+L'analyste consigne la qualification et la justification. Aucune mesure de confinement ou sanction n'est déclenchée automatiquement.
+
+Scénario alternatif — Incident confirmé sans mesure immédiate
+
+Le responsable documente la décision de surveillance ou de report et sa justification. Le dossier reste ouvert et suivi.
+
+Postcondition :
+
+L'alerte et son traitement sont traçables ; toute intervention ayant un effet sur les actifs Eventix a été décidée par une personne habilitée.
+
+Règle métier : RM40
+User Stories : US-051, US-052, US-053
+
 14. Relations include / extend
 
 Les relations UML ne sont pas utilisées automatiquement.

@@ -103,10 +103,16 @@ Les objets de valeur ci-dessous sont extraits des attributs des entités défini
 | Date d'événement | jour, mois, année | Date valide du calendrier | Événement (ENT-CATALOG-01) |
 | Heure d'événement | heure, minute | Plage horaire valide — l'invariant d'arrêt automatique des ventes à l'heure de début est porté par Événement | Événement (ENT-CATALOG-01) |
 | Lieu | nom, adresse, type (physique ou virtuel) | Adresse requise pour un lieu physique ; référence d'accès requise pour un lieu virtuel | Espace (ENT-CATALOG-02) |
+| Mode d'accès | sur place, direct, VOD | Au moins un mode associé à une catégorie ; le billet hérite des modes autorisés | Événement (ENT-CATALOG-01), Catégorie de billet (ENT-CATALOG-04), Billet (ENT-TICKETING-02) |
+| Réduction promotionnelle | valeur, conditions | Valeur définie par l'organisateur ; conditions valides et applicables à la commande | Code promotionnel (ENT-CATALOG-07), Achat (ENT-TICKETING-01) |
+| Position de siège | repère, position graphique | Référence à une place numérotée du plan de salle | Plan de salle (ENT-CATALOG-06), Billet (ENT-TICKETING-02) |
 | Prix | montant, devise | Montant nul ou positif — la devise du MVP est celle du marché camerounais | Catégorie de billet (ENT-CATALOG-04), Paiement (ENT-PAYMENT-01) |
+| Type de catégorie de billet | Standard ou pass multi-jours | Type pris en charge par la configuration de billetterie | Catégorie de billet (ENT-CATALOG-04) |
 | Quantité | nombre | Strictement positive pour une catégorie commercialisée | Catégorie de billet (ENT-CATALOG-04) |
 | Conditions de vente | texte | Peut être vide ; précise les restrictions de la catégorie | Catégorie de billet (ENT-CATALOG-04) |
 | Période de vente | date de début, date de fin | Date de fin postérieure ou égale à la date de début | Événement (ENT-CATALOG-01), Catégorie de billet (ENT-CATALOG-04) |
+| Dates de validité du pass | date de début, date de fin | Dates incluses dans la période de l'événement et dans l'ordre chronologique | Catégorie de billet (ENT-CATALOG-04), Billet (ENT-TICKETING-02) |
+| Quota d'entrées | nombre maximal, nombre consommé | Nombre maximal strictement positif ; nombre consommé compris entre zéro et le maximum | Catégorie de billet (ENT-CATALOG-04), Billet (ENT-TICKETING-02) |
 | Informations de vérification | éléments soumis, nature de l'élément | Coherentes avec l'état de vérification porté par Organisation | Organisation (ENT-IDENTITY-04) |
 
 ## 5.3. BC-03 — Event Discovery
@@ -122,7 +128,7 @@ Les objets de valeur ci-dessous sont extraits des attributs des entités défini
 |---|---|---|---|
 | Quantité réservée | nombre | Strictement positive | Réservation (ENT-BOOKING-01) |
 | Délai d'expiration | durée, date de création | La durée de cinq minutes et la libération de la disponibilité sont des invariants portés par Réservation ; le délai est un paramètre, non une constante implicite | Réservation (ENT-BOOKING-01) |
-| Attribution | disponibilité, bénéficiaire, date | Référence une disponibilité existante ; l'arbitrage simultané est un invariant porté par Disponibilité | Réservation (ENT-BOOKING-01), Achat (ENT-TICKETING-01) |
+| Attribution | disponibilité ou place numérotée, bénéficiaire, date | Référence une disponibilité ou un siège existant ; l'arbitrage simultané est un invariant porté par Disponibilité | Réservation (ENT-BOOKING-01), Achat (ENT-TICKETING-01) |
 
 ## 5.5. BC-05 — Payment Processing
 
@@ -136,8 +142,9 @@ Les objets de valeur ci-dessous sont extraits des attributs des entités défini
 
 | Objet de valeur | Attributs | Validation | Utilisé par |
 |---|---|---|---|
-| Montant de l'achat | montant, devise | Positif ou nul — un montant nul correspond à une vente d'un billet gratuit, terme défini dans le langage ubiquitaire | Achat (ENT-TICKETING-01) |
-| Contenu de l'achat | billets, quantité par catégorie | Au moins un billet ; cohérent avec la réservation associée | Achat (ENT-TICKETING-01) |
+| Montant de l'achat | montant total, devise | Positif ou nul — un montant nul correspond à un billet gratuit sans don ; le montant total distingue le billet et le don éventuel | Achat (ENT-TICKETING-01) |
+| Montant du don | montant, devise | Strictement positif ; devise identique à celle de la commande | Achat (ENT-TICKETING-01) |
+| Contenu de l'achat | billets, quantité par catégorie, code promotionnel éventuel, source de suivi éventuelle | Au moins un billet ; cohérent avec la réservation associée ; réduction et attribution conservées séparément du prix nominal | Achat (ENT-TICKETING-01) |
 | Historique de propriété | propriétaires successifs, dates de transfert | Le terme est défini dans le langage ubiquitaire ; chronologique et non réécrit | Billet (ENT-TICKETING-02) |
 
 ## 5.7. BC-07 — Access Control
@@ -176,6 +183,7 @@ Les objets de valeur ci-dessous sont extraits des attributs des entités défini
 |---|---|---|---|
 | Période statistique | date de début, date de fin | Date de fin postérieure ou égale à la date de début | Statistique (ENT-OBSERVATION-02) |
 | Valeur statistique | valeur, unité | Unité cohérente avec le type de la statistique | Statistique (ENT-OBSERVATION-02) |
+| Source de suivi | lien, partenaire ou campagne | Référence à un Lien de suivi existant ; règle d'attribution définie avant calcul | Lien de suivi (ENT-OBSERVATION-04), Statistique (ENT-OBSERVATION-02) |
 | Contenu d'événement métier | type, domaine source, acteur, objet concerné, résultat | Type et domaine source non vides | Événement métier (ENT-OBSERVATION-01) |
 
 ## 5.12. BC-12 — Communication

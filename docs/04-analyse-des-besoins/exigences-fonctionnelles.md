@@ -328,6 +328,22 @@ Eventix doit permettre de configurer notamment :
 - périodes de vente ;
 - paramètres nécessaires à la billetterie.
 
+### EF-138 — Configurer les modes d'accès d'un événement
+
+- **Acteur :** Organisateur
+- **Priorité :** `HIGH`
+
+Eventix doit permettre à l'organisateur de proposer, pour un même événement, un accès sur place, un accès en ligne à un direct ou à une VOD, ou une combinaison de ces modes.
+
+Les catégories de billets doivent préciser le ou les modes d'accès qu'elles autorisent.
+
+### EF-140 — Configurer des codes promotionnels
+
+- **Acteur :** Organisateur
+- **Priorité :** `HIGH`
+
+Eventix doit permettre à l'organisateur de créer des codes promotionnels en définissant une réduction et ses conditions d'application.
+
 ### EF-011 — Modifier un événement
 
 - **Acteur :** Organisateur
@@ -440,12 +456,28 @@ Eventix doit permettre de configurer :
 - places numérotées ;
 - places non numérotées.
 
+### EF-142 — Configurer un plan de salle interactif
+
+- **Acteur :** Organisateur
+- **Priorité :** `HIGH`
+
+Pour un événement avec places numérotées, Eventix doit permettre à l'organisateur de configurer un plan de salle interactif représentant les places et leur association aux zones ou catégories de billets.
+
 ### EF-022 — Associer une catégorie de billet à une disponibilité
 
 - **Acteur :** Organisateur
 - **Priorité :** `CRITICAL`
 
 Eventix doit permettre d'associer les catégories de billets aux espaces, zones ou places correspondants.
+
+### EF-143 — Réserver une place choisie sur le plan
+
+- **Acteur :** Participant
+- **Priorité :** `HIGH`
+
+Pour un événement avec placement numéroté, Eventix doit permettre au participant de consulter les places disponibles sur le plan interactif et de choisir une place pendant le parcours de réservation.
+
+La place choisie doit être réservée avec la commande et figurer sur le billet émis. Eventix doit empêcher que des réservations concurrentes aboutissent à la vente du même siège à plusieurs participants.
 
 ### EF-023 — Gérer les capacités
 
@@ -549,6 +581,8 @@ L'expiration ne doit pas être interprétée automatiquement comme un échec du 
 
 Eventix doit empêcher qu'une même disponibilité soit attribuée simultanément à plusieurs achats valides.
 
+Une réservation de siège numéroté doit également empêcher l'attribution concurrente de cette place à plusieurs participants.
+
 ---
 
 # 11. Domaine — Paiement
@@ -558,7 +592,7 @@ Eventix doit empêcher qu'une même disponibilité soit attribuée simultanémen
 - **Acteur :** Participant
 - **Priorité :** `CRITICAL`
 
-Eventix doit permettre au participant d'initier le paiement d'une réservation payante.
+Eventix doit permettre au participant d'initier le paiement d'une commande comprenant un billet payant ou un don optionnel.
 
 ### EF-036 — Accepter Mobile Money dans le MVP
 
@@ -624,6 +658,42 @@ La réconciliation doit déterminer si :
 Le paiement tardif ne doit pas être ignoré uniquement parce que la réservation a expiré.
 
 ---
+
+### EF-134 — Configurer les dons optionnels
+
+- **Acteur :** Organisateur
+- **Priorité :** `HIGH`
+
+Eventix doit permettre à l'organisateur d'activer ou non les dons optionnels pour un événement et, lorsqu'ils sont activés, de définir des montants suggérés.
+
+Les montants suggérés doivent être positifs et exprimés dans la devise de la commande.
+
+### EF-135 — Ajouter un don optionnel à une commande
+
+- **Acteur :** Participant
+- **Priorité :** `HIGH`
+
+Eventix doit permettre au participant d'ajouter un don lors de l'obtention ou de l'achat d'un billet gratuit ou payant, en choisissant un montant suggéré ou en saisissant un montant libre.
+
+Le don est facultatif. Un montant nul ne doit pas ajouter de ligne de don à la commande.
+
+Tout montant de don choisi doit être positif et exprimé dans la devise de la commande.
+
+### EF-136 — Enregistrer le don séparément du billet
+
+- **Acteur :** Eventix
+- **Priorité :** `HIGH`
+
+Eventix doit enregistrer le don séparément du prix du billet, tout en l'intégrant au montant total à payer lorsqu'il est supérieur à zéro.
+
+Le don ne doit ni créer un billet, ni modifier le quota d'entrées d'un pass, ni consommer une disponibilité.
+
+### EF-144 — Appliquer un code promotionnel à une commande
+
+- **Acteur :** Participant / Eventix
+- **Priorité :** `HIGH`
+
+Eventix doit permettre au participant de saisir un code promotionnel pendant sa commande. Un code valide et applicable doit réduire le montant à payer conformément à la configuration ; un code invalide ou non applicable ne doit pas modifier ce montant.
 
 # 12. Domaine — Achat et billet
 
@@ -703,6 +773,17 @@ Eventix doit permettre au participant d'obtenir un billet pour un événement gr
 
 Un billet gratuit doit néanmoins consommer la disponibilité correspondante.
 
+Lorsqu'un participant ajoute un don à une commande de billet gratuit, le don doit être payé avant la finalisation de la commande. En l'absence de don, le participant ne doit rien payer et le parcours gratuit existant est conservé, y compris toute confirmation interne d'un montant nul.
+
+### EF-139 — Distribuer l'accès en ligne associé au billet
+
+- **Acteur :** Eventix
+- **Priorité :** `HIGH`
+
+Pour un billet autorisant l'accès à un direct ou à une VOD, Eventix doit communiquer au participant les informations nécessaires pour accéder au contenu en ligne. Ces informations ne doivent être accessibles qu'au détenteur autorisé du billet.
+
+L'hébergement et la diffusion du contenu peuvent être fournis par un prestataire externe.
+
 ### EF-052 — Ne pas recréer un billet en cas d'échec technique d'émission
 
 - **Acteur :** Eventix
@@ -713,6 +794,22 @@ Si le paiement est confirmé mais que l'émission du billet échoue techniquemen
 - recréer l'achat ;
 - débiter à nouveau le participant ;
 - créer plusieurs billets pour la même transaction.
+
+### EF-130 — Configurer un pass multi-jours
+
+- **Acteur :** Organisateur
+- **Priorité :** `HIGH`
+
+Eventix doit permettre à l'organisateur de configurer une catégorie de billets sous forme de pass valable pendant des dates définies de l'événement et d'y associer un nombre maximal d'entrées.
+
+Le pass reste soumis aux capacités et disponibilités de l'événement.
+
+### EF-131 — Émettre un billet avec un quota d'entrées
+
+- **Acteur :** Eventix
+- **Priorité :** `HIGH`
+
+Lorsqu'un achat de pass est finalisé, Eventix doit émettre un billet unique associé à son quota maximal d'entrées et à ses dates de validité.
 
 ---
 
@@ -785,7 +882,7 @@ Eventix doit vérifier que le billet présenté appartient à l'événement cont
 - **Acteur :** Eventix
 - **Priorité :** `CRITICAL`
 
-Eventix doit vérifier que le billet est dans un état permettant son utilisation.
+Eventix doit vérifier que le billet est dans un état permettant son utilisation. Pour un pass, Eventix doit aussi vérifier ses dates de validité et la présence d'au moins une entrée restante.
 
 ### EF-062 — Refuser un billet déjà utilisé
 
@@ -793,6 +890,8 @@ Eventix doit vérifier que le billet est dans un état permettant son utilisatio
 - **Priorité :** `CRITICAL`
 
 Eventix doit refuser un billet ayant déjà été utilisé avec succès.
+
+Pour un pass, cette exigence s'applique lorsque le quota d'entrées est épuisé.
 
 ### EF-063 — Refuser un billet annulé
 
@@ -820,16 +919,18 @@ Lorsque toutes les vérifications nécessaires sont positives, Eventix doit perm
 - **Acteur :** Eventix
 - **Priorité :** `CRITICAL`
 
-Après autorisation effective de l'accès, Eventix doit faire passer le billet à l'état `USED`.
+Après autorisation effective de l'accès, Eventix doit faire passer un billet standard à l'état `USED`.
+
+Pour un pass, Eventix doit consommer exactement une entrée restante. Le billet est considéré comme utilisé lorsque son quota est épuisé.
 
 ### EF-067 — Garantir une seule validation réussie
 
 - **Acteur :** Eventix
 - **Priorité :** `CRITICAL`
 
-Pour un même événement, une seule tentative de validation d'un billet doit pouvoir réussir.
+Pour un billet standard, une seule validation peut réussir. Pour un pass, une seule validation concurrente peut consommer une entrée restante donnée ; des validations successives peuvent réussir tant que le quota n'est pas épuisé.
 
-Les tentatives concurrentes doivent être traitées conformément à cette règle.
+Les tentatives concurrentes doivent être traitées conformément à ces règles.
 
 ### EF-068 — Enregistrer le contexte d'un contrôle
 
@@ -874,6 +975,22 @@ Débit de contrôle
 - **Priorité :** `HIGH`
 
 Lorsque les conditions de synchronisation fiables sont rétablies, les opérations réalisées pendant le mode dégradé doivent pouvoir être réintégrées dans l'état métier cohérent.
+
+### EF-132 — Consommer une entrée lors d'un contrôle accepté
+
+- **Acteur :** Eventix
+- **Priorité :** `HIGH`
+
+Lorsqu'un scan d'entrée d'un pass est accepté, Eventix doit consommer exactement une entrée restante.
+
+Chaque scan représente une entrée. La sortie ne fait pas l'objet d'un scan. Une nouvelle entrée après une sortie consomme une autre entrée.
+
+### EF-133 — Refuser un pass épuisé ou hors validité
+
+- **Acteur :** Eventix
+- **Priorité :** `HIGH`
+
+Eventix doit refuser un pass lorsque son quota d'entrées est épuisé ou lorsque le scan a lieu hors de ses dates de validité. Un contrôle refusé ne doit pas consommer d'entrée.
 
 ---
 
@@ -1072,6 +1189,37 @@ Les réponses peuvent notamment comprendre :
 
 Les décisions sensibles relatives à la sécurité, aux restrictions et à la fraude doivent être traçables.
 
+### Supervision de la cybersécurité du système
+
+Les exigences suivantes portent sur la détection et le traitement des incidents affectant le système Eventix. Elles sont distinctes de l'analyse des signalements, de la fraude événementielle et des décisions Trust & Safety ci-dessus.
+
+### EF-145 — Détecter et présenter les alertes de cybersécurité
+
+- **Acteur :** Eventix
+- **Priorité :** `CRITICAL`
+
+Eventix doit analyser les signaux de sécurité disponibles et configurés pour identifier les activités potentiellement malveillantes, puis rendre les alertes consultables dans un tableau de bord réservé aux personnes habilitées.
+
+Chaque alerte doit présenter, dans la mesure où les informations sont disponibles, son horodatage, sa catégorie, son niveau de sévérité, les actifs concernés, les éléments de contexte et son état de traitement. Eventix ne doit pas présenter la couverture comme une garantie de détection de toutes les attaques ; les sources, catégories couvertes et limites doivent être explicites.
+
+### EF-146 — Examiner et qualifier un incident de cybersécurité
+
+- **Acteur :** Analyste cybersécurité Eventix
+- **Priorité :** `CRITICAL`
+
+L'analyste habilité doit pouvoir examiner une alerte, la qualifier comme à investiguer, incident confirmé, faux positif ou non concluante, l'associer aux alertes et actifs concernés, consigner les éléments utiles et suivre le dossier jusqu'à sa clôture.
+
+Une alerte ou une qualification automatique ne constitue pas, à elle seule, une confirmation d'attaque ni une autorisation d'intervention.
+
+### EF-147 — Décider et tracer la réponse à un incident
+
+- **Acteur :** Responsable humain habilité
+- **Priorité :** `CRITICAL`
+
+Un responsable humain habilité doit pouvoir consigner la décision prise pour un incident, sa justification, son périmètre, son auteur et son résultat, et suivre les mesures décidées jusqu'à leur résolution.
+
+Dans le périmètre du MVP, Eventix ne déclenche pas automatiquement de mesure de confinement, de suspension ou de sanction à partir d'une alerte. Toute action ayant un effet sur un compte, un événement, une opération financière ou un service doit faire suite à une décision humaine autorisée.
+
 ---
 
 # 18. Domaine — Bannissement
@@ -1181,6 +1329,22 @@ Les statistiques doivent être produites à partir des données métier sans mod
 - un paiement ;
 - un billet ;
 - une réservation.
+
+### EF-137 — Distinguer les dons dans les rapports
+
+- **Acteur :** Organisateur
+- **Priorité :** `HIGH`
+
+Dans les informations de vente et de suivi financier, Eventix doit permettre à l'organisateur de distinguer les montants des dons des montants des billets.
+
+### EF-141 — Suivre les ventes issues de liens de partage
+
+- **Acteur :** Organisateur
+- **Priorité :** `HIGH`
+
+Eventix doit permettre à l'organisateur de créer des liens de suivi associés à des partenaires, influenceurs ou campagnes, puis de consulter les visites et les commandes finalisées attribuées à chaque lien.
+
+Les résultats doivent permettre de comparer les volumes de ventes et les montants associés aux différentes sources. Un lien de suivi n'accorde pas à lui seul de réduction.
 
 ---
 
@@ -1652,6 +1816,8 @@ Certaines exigences sont volontairement maintenues avec un statut **À PRÉCISER
 
 Les règles détaillées restent à définir dans : `03-decouverte-du-metier/questions-metier-ouvertes.md`
 
+Pour un pass, le traitement de ses dates de validité et de ses entrées restantes lors d'un report est également à préciser (QMO-048).
+
 ### EF-011 — Modification importante après publication
 
 Les conséquences précises d'une modification d'événement après publication et après vente doivent être précisées.
@@ -1663,6 +1829,8 @@ Référence : `03-decouverte-du-metier/questions-metier-ouvertes.md`
 Le calcul précis des éléments financiers applicables doit être précisé par les règles financières et commerciales.
 
 Référence : `03-decouverte-du-metier/questions-metier-ouvertes.md`
+
+Les règles de remboursement, de frais, de commission et de traitement fiscal applicables aux dons restent également à préciser.
 
 ---
 

@@ -55,10 +55,10 @@ Il ne définit **pas encore** :
 Ce document est dérivé de :
 
 - `07-architecture-logique/principes-architecturaux.md` — principes P1 à P10 opposables aux décisions de découpage ;
-- `05-domain-driven-design/bounded-contexts.md` — les douze bounded contexts, leurs responsabilités et leur catégorie (cœur / soutien / générique) ;
+- `05-domain-driven-design/bounded-contexts.md` — les treize bounded contexts, leurs responsabilités et leur catégorie (cœur / soutien / générique) ;
 - `05-domain-driven-design/context-map.md` — les relations dirigées entre contextes, qui deviennent les entrées et sorties des blocs ;
 - `06-modelisation-uml/diagrammes-de-composants.md` — le grain retenu (un composant par bounded context) et la table de traçabilité des interfaces ;
-- `04-analyse-des-besoins/exigences-fonctionnelles.md` — les exigences EF-001 à EF-129, qui fondent la traçabilité de la section 10.
+- `04-analyse-des-besoins/exigences-fonctionnelles.md` — les exigences EF-001 à EF-147, qui fondent la traçabilité de la section 10.
 
 Toute responsabilité, relation ou exigence mentionnée implicitement renvoie à ces documents sources.
 
@@ -85,7 +85,7 @@ Au-dessus des blocs, la décomposition introduit **quatre familles fonctionnelle
 | **F1 — Chaîne d'achat participant** | De la découverte d'un événement au billet en main | BF-03, BF-04, BF-05, BF-06, BF-12 |
 | **F2 — Cycle de vie de l'événement** | Configurer, publier, opérer et clore un événement | BF-02, BF-07 |
 | **F3 — Boucle financière** | Clôturer, rembourser, régler | BF-08, BF-09 |
-| **F4 — Capacités transversales** | Servir tous les parcours sans y appartenir | BF-01, BF-10, BF-11 |
+| **F4 — Capacités transversales** | Servir tous les parcours sans y appartenir | BF-01, BF-10, BF-11, BF-13 |
 
 Les familles sont un **regroupement de lecture et de conception** : elles n'introduisent pas de nouvelle frontière technique et ne préjugent pas d'un déploiement commun des blocs d'une même famille.
 
@@ -120,6 +120,7 @@ Chaque décision de ce document est vérifiable contre les principes de `princip
 | `BF-10` | Trust & Safety | F4 | Générique | Analyser les signalements et décider les mesures |
 | `BF-11` | Analytics & Observability | F4 | Cœur | Collecter les faits, produire statistiques et historique |
 | `BF-12` | Communication | F1 | Générique | Transmettre billets et notifications aux participants |
+| `BF-13` | Cybersecurity Operations | F4 — transversal interne | Soutien | Recevoir des signaux minimisés, qualifier les incidents cyber et tracer la décision humaine |
 
 ```text
                          ┌──────────────────────────────────────────┐
@@ -155,7 +156,7 @@ Le flux dominant se lit de haut en bas : le participant découvre et achète (F1
 
 # 5. Famille 1 — Chaîne d'achat participant
 
-Cette famille porte le parcours commercial complet : **découvrir → réserver → payer → obtenir son billet → le recevoir**. L'exigence EF-118 (vendre un billet en ligne) est une exigence de bout en bout portée par la famille entière, pas par un bloc isolé. Les événements gratuits (EF-051) court-circuitent BF-05 : le billet est émis sans paiement.
+Cette famille porte le parcours commercial complet : **découvrir → réserver → appliquer une réduction éventuelle → payer → obtenir son billet → le recevoir**. L'exigence EF-118 (vendre un billet en ligne) est une exigence de bout en bout portée par la famille entière, pas par un bloc isolé. Un billet gratuit sans don conserve le parcours de confirmation interne à 0 XAF sans appel au prestataire ; un don positif ajoute un paiement via BF-05. Les billets peuvent autoriser un accès physique, en ligne ou hybride.
 
 ## 5.1. BF-03 — Event Discovery
 
@@ -195,6 +196,7 @@ BF-03 ne génère pas de données propres : il transforme et expose celles de BF
 - Libérer la disponibilité à l'expiration (EF-033)
 - Empêcher la double attribution d'une même disponibilité (EF-034)
 - Centraliser la disponibilité des ventes (EF-119) — la configuration source restant détenue par BF-02
+- Réserver une place numérotée de façon exclusive avec la commande (EF-143)
 
 BF-04 matérialise le principe P2 : la réservation est un cycle distinct du paiement, avec sa propre expiration, indépendante de l'état du paiement.
 
@@ -216,6 +218,8 @@ BF-04 matérialise le principe P2 : la réservation est un cycle distinct du pai
 - Traiter une confirmation avec effet unique (EF-038, EF-039)
 - Gérer un paiement échoué (EF-040)
 - Réconcilier un paiement tardif (EF-041) — déterminer billet ou remboursement sans jamais ignorer le paiement
+- Intégrer le don positif au montant total à payer et l'enregistrer séparément du prix du billet (EF-135, EF-136)
+- Valider les codes promotionnels configurés et intégrer leur réduction au montant à payer (EF-144)
 
 ## 5.4. BF-06 — Ticketing & Fulfillment
 
@@ -235,6 +239,7 @@ BF-04 matérialise le principe P2 : la réservation est un cycle distinct du pai
 - Garantir l'unicité du propriétaire actif (EF-047)
 - Permettre la consultation (EF-048) et le téléchargement (EF-049) des billets
 - Émettre un billet pour un événement gratuit (EF-051) sans recréation en cas d'échec technique (EF-052)
+- Émettre un billet avec le quota d'entrées configuré pour un pass multi-jours (EF-131)
 - Gérer les transferts : transférer (EF-053), modifier le propriétaire actif (EF-054), conserver l'historique (EF-055)
 - Invalider les billets concernés par une annulation d'événement (EF-074), sur décision de BF-02
 
@@ -253,6 +258,7 @@ BF-04 matérialise le principe P2 : la réservation est un cycle distinct du pai
 
 - Mettre le billet à disposition du participant (EF-121)
 - Distribuer le billet par email (EF-050, EF-122)
+- Communiquer aux détenteurs éligibles les informations d'accès au direct ou à la VOD (EF-139)
 - Informer les participants des annulations (EF-075) et des changements importants (EF-123)
 
 ---
@@ -274,12 +280,14 @@ Cette famille couvre la trajectoire de l'événement lui-même : sa configuratio
 
 **Capacités fonctionnelles :**
 
-- Créer (EF-008), enregistrer en brouillon (EF-009), configurer (EF-010) et modifier (EF-011) un événement
+- Créer (EF-008), enregistrer en brouillon (EF-009), configurer (EF-010, EF-138) et modifier (EF-011) un événement
 - Soumettre à vérification (EF-012), vérifier (EF-013) et publier un événement validé (EF-016)
 - Piloter les états : consultation (EF-017), arrêt des ventes (EF-018, EF-019), archivage (EF-020)
-- Décrire les espaces (EF-021), associer catégories et disponibilités (EF-022), gérer les capacités (EF-023) sans réduction incompatible avec les billets attribués (EF-024)
+- Décrire les espaces, zones et places (EF-021), associer catégories et disponibilités (EF-022), gérer les capacités (EF-023) sans réduction incompatible avec les billets attribués (EF-024), configurer le plan interactif (EF-142)
 - Annuler (EF-072) en bloquant les nouvelles ventes (EF-073) ; reporter (EF-077) en conservant les billets (EF-078) et en gérant les incompatibilités (EF-079)
 - Interdire la suppression d'un événement ayant des opérations irréversibles (EF-124), la remplacer par une gestion d'état (EF-125)
+- Configurer les passes multi-jours (validité et quota d'entrées, EF-130) et activer les dons optionnels avec leurs montants suggérés (EF-134)
+- Configurer les codes promotionnels et leurs conditions d'application (EF-140)
 
 ## 6.2. BF-07 — Access Control
 
@@ -298,6 +306,7 @@ Cette famille couvre la trajectoire de l'événement lui-même : sa configuratio
 - Scanner un billet (EF-058) et vérifier son authenticité (EF-059), son événement (EF-060) et son état (EF-061)
 - Refuser un billet déjà utilisé (EF-062), annulé (EF-063) ou d'un autre événement (EF-064) ; autoriser un billet valide (EF-065)
 - Marquer le billet comme utilisé (EF-066) avec une seule validation réussie possible (EF-067) et enregistrement du contexte du contrôle (EF-068)
+- Consommer une entrée par contrôle accepté d'un pass et refuser un pass épuisé ou hors validité (EF-132, EF-133)
 - Autoriser plusieurs scanners quand l'état partagé est fiable (EF-069)
 - Basculer en mode mono-scanner dégradé (EF-070) et reprendre la synchronisation après resynchronisation (EF-071)
 
@@ -402,9 +411,11 @@ Ces trois blocs servent tous les parcours sans y appartenir. Conformément à la
 **Capacités fonctionnelles :**
 
 - Suivre les ventes (EF-099) et les analyser par contexte (EF-100)
+- Comparer les visites, commandes et montants attribués aux liens de suivi (EF-141)
 - Suivre les entrées (EF-101) et les participants (EF-102)
 - Consulter l'activité de l'événement (EF-103) en lecture seule stricte (EF-104)
 - Conserver le journal des opérations importantes (EF-115), associées à leur contexte (EF-116), préservé après modification (EF-117)
+- Distinguer les montants des dons de ceux des billets dans les rapports de vente et de suivi financier (EF-137)
 
 ---
 
@@ -427,17 +438,18 @@ Cette lecture confirme l'objectif produit n°2 (gérer avant, pendant et après)
 | Bloc | Exigences couvertes | Exigences de bout en bout et transversales |
 |---|---|---|
 | BF-01 | EF-001 → EF-007, EF-014, EF-015 | — |
-| BF-02 | EF-008 → EF-013, EF-016 → EF-024, EF-072, EF-073, EF-077 → EF-079, EF-124, EF-125 | — |
+| BF-02 | EF-008 → EF-013, EF-016 → EF-024, EF-072, EF-073, EF-077 → EF-079, EF-124, EF-125, EF-130, EF-134, EF-138, EF-140, EF-142 | — |
 | BF-03 | EF-025 → EF-029 | — |
-| BF-04 | EF-030 → EF-034, EF-119 | — |
-| BF-05 | EF-035 → EF-041 | — |
-| BF-06 | EF-042 → EF-049, EF-051 → EF-055, EF-074 | — |
-| BF-07 | EF-057 → EF-071 | — |
+| BF-04 | EF-030 → EF-034, EF-119, EF-143 | — |
+| BF-05 | EF-035 → EF-041, EF-135, EF-136, EF-144 | — |
+| BF-06 | EF-042 → EF-049, EF-051 → EF-055, EF-074, EF-131 | — |
+| BF-07 | EF-057 → EF-071, EF-132, EF-133 | — |
 | BF-08 | EF-105 → EF-114 | — |
 | BF-09 | EF-076, EF-080 → EF-087 | — |
 | BF-10 | EF-088 → EF-098 | — |
-| BF-11 | EF-099 → EF-104, EF-115 → EF-117 | — |
-| BF-12 | EF-050, EF-075, EF-121 → EF-123 | — |
+| BF-11 | EF-099 → EF-104, EF-115 → EF-117, EF-137, EF-141 | — |
+| BF-12 | EF-050, EF-075, EF-121 → EF-123, EF-139 | — |
+| **BF-13 — Supervision cybersécurité** | EF-145 → EF-147 | — |
 | **Famille F1 entière** | — | EF-118 (vendre en ligne) |
 | **Architecture (tous blocs)** | — | EF-126 → P2, EF-127 → P6, EF-128 → P4, EF-129 → P3 |
 
@@ -450,7 +462,7 @@ Les quatre exigences transversales sont portées par l'architecture elle-même e
 | EF-128 — Garantir une source de vérité métier cohérente | P4 — Fiabilité avant débit | Un seul arbitre par ressource critique (BF-02 pour la configuration, BF-04 pour l'attribution, BF-06 pour le billet, BF-07 pour la validation) |
 | EF-129 — Ne pas exposer les responsabilités internes d'un domaine | P3 — Faible couplage | Les échanges passent par des capacités nommées, jamais par le détail interne |
 
-**Couverture : les 129 exigences fonctionnelles sont couvertes** — 122 par un bloc unique, 1 par la famille F1 (EF-118), 4 par l'architecture (EF-126 → EF-129), 2 traitées comme exclusions (EF-056, EF-120 — voir §11).
+**Couverture fonctionnelle : les 147 exigences sont tracées** — 140 affectées aux blocs (dont BF-13 pour EF-145 → EF-147), 1 portée par la famille F1 (EF-118), 4 portées par l'architecture (EF-126 → EF-129) et 2 traitées comme exclusions (EF-056, EF-120 — voir §11).
 
 ---
 
@@ -492,7 +504,13 @@ Les questions ouvertes de la phase 06 restent vives pour la suite de la phase 07
 
 | Question | Impact sur la phase 07 |
 |---|---|
-| Déploiement des blocs transversaux (BF-01, BF-10, BF-11) : service partagé unique ou répliqué | Modes de communication (`communication.md`) et flux (`flux-metier.md`) |
+| Déploiement des blocs transversaux (BF-01, BF-10, BF-11, BF-13) : service partagé unique ou répliqué | Modes de communication (`communication.md`) et flux (`flux-metier.md`) ; aucune topologie n'est présumée |
+
+## 12.3. Supervision cybersécurité (BF-13)
+
+La supervision est une responsabilité MVP inscrite par EF-145 à EF-147. D-ARCH-02 tranche sa frontière logique : BF-13/BC-13/MOD-13 possèdent les alertes et incidents cyber. Les signaux proviennent des modules ou sources explicitement autorisés sous forme minimisée ; une personne habilitée décide des mesures, exécutées par le propriétaire de la ressource. Aucune réponse automatique n'est déclenchée par une alerte.
+
+Cette décision ne choisit ni outil, ni source active, ni transport, ni déploiement. Ces éléments restent à spécifier dans les phases 07 à 10.
 
 ---
 
@@ -509,7 +527,7 @@ La décomposition fonctionnelle ne préjuge pas :
 
 # 14. Résumé
 
-Ce document découpe Eventix en **douze blocs fonctionnels** en correspondance un-à-un avec les bounded contexts validés, regroupés en **quatre familles** : chaîne d'achat participant, cycle de vie de l'événement, boucle financière, capacités transversales. Chaque bloc est décrit par son rôle, ses capacités, ses entrées/sorties et ses principes dominants. Les 129 exigences fonctionnelles sont couvertes et tracées, dont quatre exigences transversales confiées à l'architecture elle-même. Une incohérence source (flux BF-07 → BF-02) est signalée et son arbitrage est attendu avant la définition des interfaces.
+Ce document découpe Eventix en **treize blocs fonctionnels**, dont douze blocs de chaîne métier et un bloc transversal de supervision cybersécurité, alignés sur leurs bounded contexts. Les blocs métier sont regroupés en **quatre familles** : chaîne d'achat participant, cycle de vie de l'événement, boucle financière, capacités transversales. Les 147 exigences sont tracées, dont EF-145 à EF-147 affectées à BF-13. Une incohérence de flux héritée (BF-07 → BF-02) reste à arbitrer dans les contrats.
 
 ---
 
@@ -518,7 +536,7 @@ Ce document découpe Eventix en **douze blocs fonctionnels** en correspondance u
 - chaque bloc possède un rôle, des capacités et des frontières explicites ;
 - la correspondance BF-nn ↔ BC-nn est vérifiable ;
 - chaque capacité est rattachée à au moins une exigence fonctionnelle ;
-- la couverture des 129 exigences est complète et vérifiable ;
+- les 147 exigences sont affectées ou classées dans la table de couverture, y compris EF-145 à EF-147 dans BF-13 ;
 - les entrées/sorties sont héritées de la context map sans invention ;
 - les principes architecturaux sont cités par numéro et opposables ;
 - aucune décision technique n'est prise ou implicite.
@@ -538,9 +556,9 @@ Ce document découpe Eventix en **douze blocs fonctionnels** en correspondance u
 
 | Élément | État |
 |---|---|
-| Blocs fonctionnels définis | ✅ 12/12 (`bounded-contexts.md`) |
+| Blocs fonctionnels définis | ✅ 13/13 (`bounded-contexts.md`) |
 | Familles fonctionnelles | ✅ 4 définies |
-| Traçabilité EF | ✅ 129/129 couvertes |
+| Traçabilité EF | ✅ 147/147 couvertes (140 affectées aux blocs, 1 famille, 4 architecture, 2 exclusions) |
 | Entrées/sorties | ✅ Héritées de la context map |
 | Incohérence BF-07 → BF-02 | ⚠️ Signalée — arbitrage en attente |
 | Décisions techniques | ⏳ NON PRÉJUGÉES |
@@ -551,7 +569,7 @@ Ce document découpe Eventix en **douze blocs fonctionnels** en correspondance u
 
 ### Valeur ajoutée par rapport aux sources
 
-Ce document ne redéfinit ni les bounded contexts ni leurs relations. Il ajoute : le regroupement en familles fonctionnelles, la description par capacités tracées vers les exigences EF, la lecture temporelle avant/pendant/après alignée sur la vision produit, et la table de couverture complète des 129 exigences.
+Ce document ne redéfinit ni les bounded contexts ni leurs relations. Il ajoute : le regroupement en familles fonctionnelles, la description par capacités tracées vers les exigences EF, la lecture temporelle avant/pendant/après alignée sur la vision produit, et la table de couverture des 147 exigences. BF-13 isole la supervision cybersécurité des fonctions de confiance métier et d'analytique.
 
 ### Sur la correspondance un-à-un
 

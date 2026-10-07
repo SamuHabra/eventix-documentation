@@ -39,12 +39,12 @@ Eventix n'étant pas développé en programmation orientée objet, ce dossier a 
 | # | Document | Contenu | Sources (phases 03-05) |
 |---|---|---|---|
 | 1 | [`diagramme-de-contexte.md`](diagramme-de-contexte.md) | Eventix comme système unique, acteurs et systèmes externes | `context-map.md` |
-| 2 | [`diagrammes-de-cas-d-utilisation.md`](diagrammes-de-cas-d-utilisation.md) | 26 cas d'usage, organisés en 5 vues par acteur | `use-cases.md` |
-| 3 | [`diagrammes-de-classes.md`](diagrammes-de-classes.md) | Structure conceptuelle du domaine, 20 agrégats, allégée (sans POO) | `entites.md`, `objets-valeur.md`, `agregats.md` |
+| 2 | [`diagrammes-de-cas-d-utilisation.md`](diagrammes-de-cas-d-utilisation.md) | 37 cas d'usage, organisés en 6 vues détaillées par acteur/domaine | `use-cases.md` |
+| 3 | [`diagrammes-de-classes.md`](diagrammes-de-classes.md) | Structure conceptuelle du domaine, 22 agrégats, allégée (sans POO) | `entites.md`, `objets-valeur.md`, `agregats.md` |
 | 4 | [`diagrammes-de-sequence.md`](diagrammes-de-sequence.md) | Orchestration des 10 services de domaine | `diagrammes-de-cas-d-utilisation.md`, `services-de-domaine.md` |
-| 5 | [`diagrammes-d-etat.md`](diagrammes-d-etat.md) | 13 automates d'agrégats, transitions nommées par événement | `agregats.md`, `evenements-de-domaine.md` |
+| 5 | [`diagrammes-d-etat.md`](diagrammes-d-etat.md) | 15 automates d'agrégats, transitions nommées par événement | `agregats.md`, `evenements-de-domaine.md` |
 | 6 | [`diagrammes-d-activite.md`](diagrammes-d-activite.md) | Flux de contrôle, décisions et boucles de reprise des processus clés | `processus-metier.md`, `diagrammes-de-sequence.md` |
-| 7 | [`diagrammes-de-composants.md`](diagrammes-de-composants.md) | 12 composants alignés sur les bounded contexts | `diagrammes-de-classes.md`, `bounded-contexts.md` |
+| 7 | [`diagrammes-de-composants.md`](diagrammes-de-composants.md) | 13 composants logiques, dont BC-13 de supervision cybersécurité | `diagrammes-de-classes.md`, `bounded-contexts.md` |
 | 8 | [`diagrammes-de-deploiement.md`](diagrammes-de-deploiement.md) | Infrastructure préliminaire, sans décision technique prématurée | `diagrammes-de-composants.md` |
 
 ---
@@ -119,12 +119,12 @@ Un lecteur pressé qui ne veut que les décisions d'architecture peut se limiter
 | Décision | Document source | Pourquoi |
 |---|---|---|
 | Marketplace multi-organisateurs avec commission, PSP Mobile Money traité comme boîte noire unique | `diagramme-de-contexte.md` | Évite d'anticiper un choix d'intégration (API directe vs agrégateur) non encore tranché |
-| 20 agrégats (pas 16), frontières de `agregats.md` prioritaires sur les relations de composition brutes de `entites.md` | `diagrammes-de-classes.md` | `agregats.md` applique explicitement les règles D1-D5 ; `entites.md` ne liste que des candidats avant affinement |
+| 22 agrégats (pas 16), frontières de `agregats.md` prioritaires sur les relations de composition brutes de `entites.md` | `diagrammes-de-classes.md` | `agregats.md` applique explicitement les règles D1-D5 ; `entites.md` ne liste que des candidats avant affinement |
 | Réservation et Disponibilité en agrégats séparés, Billet et Achat en agrégats séparés | `diagrammes-de-classes.md` | Isoler les invariants à forte contention (réservation) et respecter le cycle de vie propre du Billet (D4) |
 | Tout service de domaine ne modifie un agrégat que par sa racine, jamais directement un autre agrégat | `diagrammes-de-sequence.md` | Traduction directe de D2 (référence par identité) au niveau de l'orchestration |
 | Horloge système introduite comme acteur pour les comportements temporels (expiration, clôture) | `diagrammes-de-cas-d-utilisation.md`, `diagrammes-de-sequence.md` | La notation UML exige un acteur déclencheur ; `evenements-de-domaine.md` ne rattachait ces déclenchements à aucun acteur humain |
 | Boucles de nouvelle tentative explicites (émission de billet, remboursement, retrait) | `diagrammes-d-activite.md` | `processus-metier.md` les décrit en prose ; aucun autre diagramme du dossier ne les rendait visibles |
-| 12 composants alignés strictement 1:1 sur les bounded contexts, ni plus fin ni plus grossier | `diagrammes-de-composants.md` | Respecte à la fois la cohérence métier (§3.1 de `bounded-contexts.md`) et la frontière explicite (§3.5) |
+| 13 composants logiques alignés sur les bounded contexts | `diagrammes-de-composants.md` | Les douze contextes métier sont conservés ; BC-13 est le contexte de soutien cyber ajouté au MVP |
 | Infrastructure de déploiement préliminaire : un seul nœud applicatif logique, monolithe vs microservices non tranché | `diagrammes-de-deploiement.md` | Aucune source ne préjuge de l'architecture technique ; un choix prématuré aurait contredit `bounded-contexts.md` §11 |
 
 ---
@@ -193,7 +193,6 @@ Cette table est elle-même la réponse consolidée à la question posée en tout
 |---|---|---|
 | Catalogue | `evenements-de-domaine.md` doit-il ajouter l'issue « Vérification complémentaire » ? | `diagrammes-d-activite.md` |
 | Identité | L'attribut `ÉtatUtilisateur` doit-il être documenté par des événements dédiés ? | `diagrammes-d-etat.md` |
-| Agrégats | Le résumé de `agregats.md` doit-il être corrigé à 20 agrégats plutôt que 16 ? | `diagrammes-de-classes.md` |
 | Composants | La relation `StatutBilletUtilisé` (BC-07 → BC-02) doit-elle être corrigée en BC-07 → BC-06 ? | `diagrammes-de-composants.md` |
 
 ---
@@ -206,10 +205,10 @@ Au-delà des clarifications (des questions ouvertes), huit incohérences factuel
 |---|---|---|---|
 | 1 | `entites.md` §7.1 fait de Billet un composant d'Achat ; `agregats.md` les sépare | `entites.md` vs `agregats.md` | `diagrammes-de-classes.md` §14 |
 | 2 | `entites.md` §7.1 fait de Point d'entrée un composant d'Événement ; `agregats.md` les sépare | `entites.md` vs `agregats.md` | `diagrammes-de-classes.md` §14 |
-| 3 | Résumé de `agregats.md` annonce 16 agrégats ; le décompte détaillé en donne 20 | `agregats.md` (interne) | `diagrammes-de-classes.md` §14 |
+| 3 | Écart antérieur entre le résumé et le détail du nombre d'agrégats ; résumé harmonisé à 22, BC-13 inclus | `agregats.md` (corrigé) | `diagrammes-de-classes.md` §15 |
 | 4 | Double nommage des événements de réconciliation (agrégat vs service) | `evenements-de-domaine.md` (interne) | `diagrammes-d-etat.md` §19 |
 | 5 | Faute de frappe `ExpirationTraitéee` | `evenements-de-domaine.md` | `diagrammes-d-etat.md` §19 |
-| 6 | Décompte de 16 agrégats répété dans `evenements-de-domaine.md`, propageant l'incohérence n°3 | `evenements-de-domaine.md` | `diagrammes-d-etat.md` §19 |
+| 6 | Ancienne incohérence du nombre d'agrégats, désormais corrigée dans `agregats.md` | Sources phase 05 (corrigé) | `diagrammes-d-etat.md` §19 |
 | 7 | Troisième issue de vérification (« Vérification complémentaire », PM06) absente d'`evenements-de-domaine.md` | `processus-metier.md` vs `evenements-de-domaine.md` | `diagrammes-d-activite.md` §13 |
 | 8 | Ordre contradictoire pour l'annulation d'événement (notifier avant ou après invalidation) | `processus-metier.md` vs `services-de-domaine.md` | `diagrammes-d-activite.md` §13 |
 
@@ -225,11 +224,11 @@ Au-delà des clarifications (des questions ouvertes), huit incohérences factuel
 | `diagrammes-de-cas-d-utilisation.md` | 1.0 | À valider | 6 (vue d'ensemble + 5 détaillées) |
 | `diagrammes-de-classes.md` | 1.0 | À valider | 9 (vue d'ensemble + 8 détaillées) |
 | `diagrammes-de-sequence.md` | 1.0 | À valider | 11 (10 services + 1 contre-exemple) |
-| `diagrammes-d-etat.md` | 1.0 | À valider | 13 automates |
+| `diagrammes-d-etat.md` | 1.0 | À valider | 15 automates |
 | `diagrammes-d-activite.md` | 1.0 | À valider | 11 (ACT-01 à ACT-08, dont sous-diagrammes) |
 | `diagrammes-de-composants.md` | 1.0 | À valider | 3 (2 vues + 1 illustration de notation) |
 | `diagrammes-de-deploiement.md` | 1.0 | À valider | 1 |
-| **Total** | — | **8/8 documents livrés** | **55 diagrammes** |
+| **Total** | — | **8/8 documents livrés** | **57 diagrammes** |
 
 Aucun document n'a encore de statut « validé » : les 36 points de clarification du §7 restent ouverts, et plusieurs touchent des choix structurants (frontières d'agrégats, périmètre du MVP) qu'il serait prématuré de figer sans retour du product owner.
 
@@ -239,7 +238,7 @@ Aucun document n'a encore de statut « validé » : les 36 points de clarificati
 
 1. **Arbitrer les décisions produit** du §7.1 — en priorité celles qui touchent plusieurs documents à la fois (ex. le statut du Transfert de billet, qui remonte jusqu'à `diagrammes-de-classes.md`).
 2. **Corriger les sources amont** listées en §7.3 et §8 (`entites.md`, `agregats.md`, `evenements-de-domaine.md`, `services-de-domaine.md`) pour que la phase 05 reste une base saine pour toute évolution future de ce dossier.
-3. **Construire le Modèle Conceptuel de Données (Merise)**, annoncé en tout début de ce chantier comme la suite logique de `diagrammes-de-classes.md`, en s'appuyant directement sur les 20 agrégats déjà délimités.
+3. **Construire le Modèle Conceptuel de Données (Merise)**, annoncé en tout début de ce chantier comme la suite logique de `diagrammes-de-classes.md`, en s'appuyant directement sur les 22 agrégats déjà délimités.
 4. **Trancher les décisions techniques** du §7.2 (idempotence, monolithe vs microservices) dès que l'équipe de développement est constituée — ce dossier leur fournit déjà toute l'information métier nécessaire pour le faire sans attendre de nouvelles clarifications produit.
 
 ---

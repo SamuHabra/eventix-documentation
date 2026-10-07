@@ -46,7 +46,7 @@ Il ne redéfinit ni les sous-domaines, ni les promesses, ni les règles métier 
 
 Ce document est dérivé principalement de :
 
-- `05-domain-driven-design/sous-domaines.md` — découpage en trente-six sous-domaines
+- `05-domain-driven-design/sous-domaines.md` — découpage des treize domaines en sous-domaines
 - `05-domain-driven-design/core-domaines.md` — classification cœur / soutien / générique
 
 Toute définition, règle métier ou exigence mentionnée implicitement renvoie à ces documents sources.
@@ -95,6 +95,7 @@ Chaque bounded context possède un identifiant unique :
 | `BC-10` | Trust & Safety | Générique |
 | `BC-11` | Analytics & Observability | Cœur |
 | `BC-12` | Communication | Générique |
+| `BC-13` | Cybersecurity Operations | Soutien |
 
 ---
 
@@ -235,13 +236,14 @@ Ce contexte englobe tout ce qui concerne la collecte des événements métier, l
 
 ### Responsabilités propres
 
-- Recueillir les faits marquants de tous les domaines.
+- Recueillir les faits métier autorisés des contextes BC-01 à BC-12.
 - Produire les agrégats d'activité en lecture seule.
 - Maintenir le journal chronologique des opérations importantes.
+- Ne recevoir de BC-13 que des indicateurs agrégés non sensibles si un besoin et un contrat explicites sont validés ; les signaux, alertes, incidents et décisions cyber ne sont pas des événements métier universellement collectés par BC-11.
 
 ### Relations avec les contextes voisins
 
-- **Reçoit de** : tous les bounded contexts (événements métier).
+- **Reçoit de** : BC-01 à BC-12 (événements métier autorisés) ; éventuellement BC-13 (indicateurs agrégés non sensibles, sur contrat validé).
 - **Fournit à** : Organisateur (statistiques et historique), Eventix (pilotage).
 
 ### Justification de la frontière
@@ -339,7 +341,7 @@ Les trois sous-domaines de REFUND partagent l'invariant de l'unicité du rembour
 
 ---
 
-# 7. Bounded Contexts génériques
+# 7. Bounded Contexts génériques et transversal de soutien
 
 ## 7.1. BC-01 — Identity & Access Management
 
@@ -456,6 +458,37 @@ Ce contexte englobe tout ce qui concerne la mise à disposition des billets, leu
 ### Justification de la frontière
 
 Les trois sous-domaines de COMMUNICATION partagent le même langage (mise à disposition, distribution, notification) et la même nature de responsabilité (transmission d'informations). Les séparer fragmenterait une responsabilité métier unique.
+
+## 7.5. BC-13 — Cybersecurity Operations
+
+| Champ | Valeur |
+|---|---|
+| **Catégorie** | Soutien |
+| **Sous-domaines inclus** | SD-13-1, SD-13-2, SD-13-3 |
+| **Domaine parent** | CYBERSECURITY OPERATIONS |
+
+### Frontière logique
+
+Ce contexte interne couvre la supervision de la sécurité du système Eventix : réception de signaux minimisés, création et qualification humaine d'alertes/incidents, consignation et suivi des décisions de réponse.
+
+### Responsabilités propres
+
+- Recevoir des signaux de sécurité émis par les modules et sources explicitement autorisés.
+- Centraliser les alertes et dossiers d'incident cyber, leur contexte utile et leur qualification.
+- Enregistrer la décision, la justification, l'autorité et le résultat de la réponse.
+
+### Relations avec les contextes voisins
+
+- **Reçoit de** : BC-01 à BC-12 (signaux minimisés, lorsqu'une source est définie) ; BC-01 (identité et habilitations).
+- **Fournit à** : BC-01 ou BC-02, et à tout autre module propriétaire d'un actif, une décision humaine autorisée à appliquer par son propre contrat ; BC-11 peut recevoir des indicateurs agrégés non sensibles si un besoin est validé.
+
+### Limites de responsabilité
+
+BC-13 ne confirme pas automatiquement une attaque à partir d'une alerte, ne décide pas d'une sanction Trust & Safety et ne modifie pas directement les comptes, événements, billets, paiements ou soldes. Les mesures liées à un actif sont décidées conformément à RM40 puis exécutées par le module propriétaire. BC-10 conserve la fraude événementielle et les décisions métier ; BC-11 reste dédié aux statistiques et faits analytiques.
+
+### Justification de la frontière
+
+La cybersécurité du système possède son vocabulaire, son cycle d'investigation et ses habilitations, distincts de la confiance métier et des statistiques. La regrouper avec BC-10 confondrait intrusion technique et fraude événementielle ; la regrouper avec BC-11 ferait de l'analytique le propriétaire d'une décision opérationnelle.
 
 ---
 
@@ -606,7 +639,7 @@ Un bounded context peut être implémenté comme un module dans un monolithe, co
 
 # 12. Résumé
 
-Ce document délimite douze bounded contexts qui regroupent les trente-six sous-domaines d'Eventix. Cinq bounded contexts sont classés cœur, trois sont classés soutien, et quatre sont classés génériques. Les frontières suivent la cohérence métier, le cycle de vie et le niveau de différenciation. Les relations entre contextes sont explicites et minimales. Aucune décision technique n'est prise ou implicite.
+Ce document délimite treize bounded contexts : les douze contextes métier initiaux, inchangés, et BC-13, contexte interne de soutien dédié à la supervision cybersécurité MVP. Cinq contextes sont classés cœur, quatre soutien et quatre génériques. Les frontières suivent la cohérence, les cycles de vie et les niveaux de différenciation. Les relations et responsabilités restent logiques ; aucune décision de déploiement ou d'outil n'est prise ou implicite.
 
 ---
 

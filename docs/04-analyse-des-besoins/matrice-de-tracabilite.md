@@ -309,6 +309,10 @@ Exemple :
 | `B31` | `BM-031` | VALIDÉE |
 | `B32` | `BM-032` | VALIDÉE |
 | `B33` | `BM-033` | VALIDÉE |
+| `B35` | `BM-035` | VALIDÉE |
+| `B36` | `BM-036` | VALIDÉE |
+| `B37` | `BM-037` | VALIDÉE |
+| `B38` | `BM-038` | VALIDÉE |
 
 Les besoins non explicitement présents dans les artefacts actuels ne doivent pas être inventés.
 
@@ -321,7 +325,7 @@ Les User Stories actuelles utilisent la convention stable `US-XXX`.
 Le registre principal comprend :
 
 ```text
-US-001 → US-040
+US-001 → US-050
 ```
 
 avec les exceptions suivantes :
@@ -332,6 +336,16 @@ US-021 → À PRÉCISER
 US-024 → conditions financières à préciser
 US-039 → statut MVP à préciser
 US-040 → statut MVP à préciser
+US-041 → pass multi-jours, MVP
+US-042 → contrôle du quota d'entrées, MVP
+US-043 → configuration des dons optionnels, MVP
+US-044 → ajout d'un don à une commande, MVP
+US-045 → billetterie hybride, MVP
+US-046 → accès au direct ou à la VOD avec un billet, MVP
+US-047 → codes promotionnels, MVP
+US-048 → liens de suivi et mesure des ventes, MVP
+US-049 → configuration du plan de salle interactif, MVP
+US-050 → sélection d'une place numérotée, MVP
 ```
 
 Les sources indiquent notamment que US-039 et US-040 restent à préciser concernant le périmètre de la vente physique. 
@@ -381,6 +395,10 @@ Le modèle actuel couvre notamment :
 | `UC-024` | `US-005` |
 | `UC-025` | `US-007` |
 | `UC-026` | `US-008`, `US-025` |
+| `UC-027` | `US-041` |
+| `UC-028` | `US-042` |
+| `UC-029` | `US-044` |
+| `UC-030` | `US-043` |
 
 Cette relation n'est pas nécessairement 1:1.
 
@@ -432,6 +450,10 @@ Les relations actuellement établies sont :
 | `B17` | est couvert par | `US-036` |
 | `B16` | est couvert par | `US-037` |
 | `B33` | est couvert par | `US-038` |
+| `B35` | est couvert par | `US-045`, `US-046` |
+| `B36` | est couvert par | `US-047`, `US-048` |
+| `B37` | est couvert par | `US-049`, `US-050` |
+| `B38` | est couvert par | `US-051`, `US-052`, `US-053` |
 | `B27` | est couvert par | `US-009` |
 | — | à préciser | `US-039` |
 | — | à préciser | `US-040` |
@@ -456,6 +478,19 @@ Les relations non explicitement établies dans les sources restent ouvertes.
 | `US-007` | est réalisé par | `UC-025` |
 | `US-008` | est réalisé par | `UC-026` |
 | `US-008` | est réalisé par | `UC-014` |
+| `US-041` | est réalisé par | `UC-027` |
+| `US-042` | est réalisé par | `UC-028` |
+| `US-043` | est réalisé par | `UC-030` |
+| `US-044` | est réalisé par | `UC-029` |
+| `US-045` | est réalisé par | `UC-031` |
+| `US-046` | est réalisé par | `UC-032` |
+| `US-047` | est réalisé par | `UC-033` |
+| `US-048` | est réalisé par | `UC-034` |
+| `US-049` | est réalisé par | `UC-035` |
+| `US-050` | est réalisé par | `UC-036` |
+| `US-051` | est réalisé par | `UC-037` |
+| `US-052` | est réalisé par | `UC-037` |
+| `US-053` | est réalisé par | `UC-037` |
 | `US-010` | est réalisé par | `UC-017` |
 | `US-011` | est réalisé par | `UC-005` |
 | `US-012` | est réalisé par | `UC-005` |
@@ -640,6 +675,19 @@ RM32 → US-019
 RM32 → US-020
 
 RM33 → US-020
+RM34 → US-041
+RM34 → US-042
+RM35 → US-043
+RM35 → US-044
+RM36 → US-045
+RM36 → US-046
+RM37 → US-047
+RM38 → US-048
+RM39 → US-049
+RM39 → US-050
+RM40 → US-051
+RM40 → US-052
+RM40 → US-053
 ```
 
 Les règles relatives aux ventes physiques restent liées aux User Stories `US-039` et `US-040`, mais ces User Stories demeurent `À PRÉCISER` pour le périmètre MVP.
@@ -674,6 +722,17 @@ Exemples consolidés :
 | `UC-024` | `RM01`, `RM02`, `RM03` |
 | `UC-025` | `RM03`, `RM05`, `RM06`, `RM25` |
 | `UC-026` | `RM13`, `RM14`, `RM16`, `RM17` |
+| `UC-027` | `RM23`, `RM24`, `RM34` |
+| `UC-028` | `RM13`, `RM14`, `RM16`, `RM34` |
+| `UC-029` | `RM03`, `RM05`, `RM35` |
+| `UC-030` | `RM35` |
+| `UC-031` | `RM36` |
+| `UC-032` | `RM36` |
+| `UC-033` | `RM37` |
+| `UC-034` | `RM38` |
+| `UC-035` | `RM39` |
+| `UC-036` | `RM39` |
+| `UC-037` | `RM40` |
 
 ---
 
@@ -733,6 +792,19 @@ La couverture actuelle est :
 | `US-036` | `AC-081 → AC-083` |
 | `US-037` | `AC-084 → AC-086` |
 | `US-038` | `AC-087 → AC-090` |
+| `US-041` | `AC-091 → AC-092` |
+| `US-042` | `AC-093 → AC-096` |
+| `US-043` | `AC-097` |
+| `US-044` | `AC-098 → AC-103` |
+| `US-045` | `AC-104` |
+| `US-046` | `AC-105 → AC-106` |
+| `US-047` | `AC-107 → AC-108`, `AC-114` |
+| `US-048` | `AC-109 → AC-110` |
+| `US-049` | `AC-111` |
+| `US-050` | `AC-112 → AC-113` |
+| `US-051` | `AC-115 → AC-116` |
+| `US-052` | `AC-117` |
+| `US-053` | `AC-118 → AC-119` |
 | `US-039` | À préciser |
 | `US-040` | À préciser |
 
@@ -821,6 +893,35 @@ UC-022 → AC-087
 UC-022 → AC-088
 UC-022 → AC-089
 UC-022 → AC-090
+
+UC-027 → AC-091
+UC-027 → AC-092
+UC-028 → AC-093
+UC-028 → AC-094
+UC-028 → AC-095
+UC-028 → AC-096
+UC-030 → AC-097
+UC-029 → AC-098
+UC-029 → AC-099
+UC-029 → AC-100
+UC-029 → AC-101
+UC-029 → AC-102
+UC-029 → AC-103
+UC-031 → AC-104
+UC-032 → AC-105
+UC-032 → AC-106
+UC-033 → AC-107
+UC-033 → AC-108
+UC-034 → AC-109
+UC-034 → AC-110
+UC-035 → AC-111
+UC-036 → AC-112
+UC-036 → AC-113
+UC-037 → AC-115
+UC-037 → AC-116
+UC-037 → AC-117
+UC-037 → AC-118
+UC-037 → AC-119
 ```
 
 Cette liste constitue une consolidation de traçabilité et ne remplace pas le contenu des Use Cases ou des critères.
@@ -829,26 +930,37 @@ Cette liste constitue une consolidation de traçabilité et ne remplace pas le c
 
 # 20. Exigences fonctionnelles
 
-Les User Stories et Use Cases indiquent actuellement que les identifiants exacts des exigences fonctionnelles doivent être consolidés dans la matrice.
-
-La matrice **ne doit donc pas inventer** de `REQ-F-XXX`.
+Les nouvelles exigences relatives aux passes et aux dons possèdent des identifiants dédiés dans `exigences-fonctionnelles.md`.
 
 Statut actuel :
 
 ```text
-REQ-F
-  ↓
-Identifiants exacts à consolider
-  ↓
-À VALIDER
+EF-130 → US-041 → UC-027 → AC-091, AC-092
+EF-131 → US-041 → UC-027
+EF-132 → US-042 → UC-028 → AC-093, AC-094, AC-096
+EF-133 → US-042 → UC-028 → AC-095
+EF-134 → US-043 → UC-030 → AC-097
+EF-135 → US-044 → UC-029 → AC-098, AC-099, AC-100, AC-101
+EF-136 → US-044 → UC-029 → AC-103
+EF-137 → US-044 → UC-029 → AC-102
+EF-138 → US-045 → UC-031 → AC-104
+EF-139 → US-046 → UC-032 → AC-105, AC-106
+EF-140 → US-047 → UC-033 → AC-114
+EF-144 → US-047 → UC-033 → AC-107, AC-108
+EF-141 → US-048 → UC-034 → AC-109, AC-110
+EF-142 → US-049 → UC-035 → AC-111
+EF-143 → US-050 → UC-036 → AC-112, AC-113
+EF-145 → US-051 → UC-037 → AC-115, AC-116
+EF-146 → US-052 → UC-037 → AC-117
+EF-147 → US-053 → UC-037 → AC-118, AC-119
 ```
 
-Une fois les identifiants définitifs disponibles, les relations seront ajoutées selon le modèle :
+Les autres exigences fonctionnelles déjà présentes pourront être reliées à la matrice lors de leur consolidation. Le modèle de relation reste :
 
 ```text
 BM-XXX
    ↓
-REQ-F-XXX
+EF-XXX
    ↓
 US-XXX
    ↓

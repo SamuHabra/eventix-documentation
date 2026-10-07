@@ -32,7 +32,7 @@
 
 ## 1. Objectif et portée
 
-Ce document regroupe les classes déjà établies dans `diagrammes-de-classes.md` en **composants**, un composant par bounded context, conformément aux frontières déjà délimitées dans `bounded-contexts.md`. C'est un alignement volontairement strict et sans réinterprétation : les douze composants de ce document portent exactement les douze identifiants `BC-01` à `BC-12` déjà établis, et les relations entre composants reprennent exactement les colonnes « Reçoit de » / « Fournit à » déjà documentées pour chacun.
+Ce document regroupe les classes déjà établies dans `diagrammes-de-classes.md` en **composants**, un composant par bounded context, conformément aux frontières déjà délimitées dans `bounded-contexts.md`. Les douze composants métier initiaux conservent leurs identifiants BC-01 à BC-12 ; le contexte de supervision cybersécurité ajouté au MVP est BC-13. La frontière reste logique et ne préjuge pas d'une unité de déploiement.
 
 Ce document ne redéfinit ni les responsabilités de chaque contexte (déjà dans `bounded-contexts.md`), ni les attributs des classes qu'il contient (déjà dans `diagrammes-de-classes.md`). Il ajoute la seule chose que ni l'un ni l'autre ne montre : **la frontière physique de déploiement potentielle**, matérialisée par des interfaces nommées entre composants.
 
@@ -44,7 +44,7 @@ Ce document ne redéfinit ni les responsabilités de chaque contexte (déjà dan
 
 | Élément UML 2.5 | Usage |
 |---|---|
-| `[Composant]` | Un bounded context complet (BC-01 à BC-12) |
+| `[Composant]` | Un bounded context complet (BC-01 à BC-13) |
 | `package` | Regroupement visuel par catégorie de différenciation (Cœur / Soutien / Générique), repris tel quel de `bounded-contexts.md` §4 |
 | Interface nommée (lollipop `-(` / socket `..>`) | Le contrat exposé par un composant, nommé d'après la donnée ou la capacité qu'il transmet |
 | Flèche simple étiquetée | Simplification pragmatique de la paire lollipop/socket, utilisée partout sauf dans le diagramme d'illustration (§6) |
@@ -52,7 +52,7 @@ Ce document ne redéfinit ni les responsabilités de chaque contexte (déjà dan
 
 **Convention de lecture des flèches :** dans ce document, `A --> B : X` se lit *« A fournit X à B »* — c'est-à-dire que la flèche part du **fournisseur** vers le **consommateur**, et non l'inverse. Ce choix suit directement le vocabulaire déjà utilisé dans `bounded-contexts.md` (« Fournit à »), pour que chaque flèche du diagramme soit vérifiable mot pour mot contre sa source.
 
-**Sur la notation lollipop/socket complète :** l'UML 2.5 distingue formellement une interface *fournie* (lollipop, `-(`) d'une interface *requise* (socket, `)-`). Cette notation est illustrée explicitement dans le diagramme 3 (§6) pour un cas représentatif (BC-02). Le reste du dossier la simplifie en flèches nommées directes, pour la même raison de lisibilité déjà invoquée dans tous les diagrammes précédents de ce dossier : avec plus de vingt relations documentées entre douze composants, la notation complète rendrait l'ensemble illisible sans ajouter d'information — le nom de l'interface porte déjà tout le contrat.
+**Sur la notation lollipop/socket complète :** l'UML 2.5 distingue formellement une interface *fournie* (lollipop, `-(`) d'une interface *requise* (socket, `)-`). Cette notation est illustrée explicitement dans le diagramme 3 (§6) pour un cas représentatif (BC-02). Le reste du dossier la simplifie en flèches nommées directes, pour la même raison de lisibilité déjà invoquée dans tous les diagrammes précédents de ce dossier : la table de traçabilité porte les contrats sans rendre la vue illisible.
 
 ---
 
@@ -74,8 +74,11 @@ Cette table est la traçabilité directe demandée : quelles classes de `diagram
 | **BC-10** | Trust & Safety | Générique | Signalement, Mesure de sécurité |
 | **BC-11** | Analytics & Observability | Cœur | Événement métier, Statistique, Historique |
 | **BC-12** | Communication | Générique | Distribution, Notification |
+| **BC-13** | Cybersecurity Operations | Soutien | Alerte cybersécurité, Incident cybersécurité, leurs signaux et décisions |
 
-Ce regroupement est **exhaustif** : les 34 entités et objets de valeur de `diagrammes-de-classes.md` sont couverts par exactement un composant chacun, sans chevauchement — cohérence directe avec le principe D2 (« un agrégat appartient à un seul bounded context ») déjà établi en amont.
+Ce regroupement est **exhaustif** : les 40 entités du modèle actuel et leurs objets de valeur sont couverts par exactement un composant chacun, sans chevauchement — cohérence directe avec le principe D2 (« un agrégat appartient à un seul bounded context ») déjà établi en amont.
+
+La mise à jour du modèle ajoute les quatre entités cyber de BC-13. Les anciennes entités métier restent affectées à leurs propriétaires actuels ; les références d'actifs dans BC-13 sont par identifiant et n'emportent aucune propriété des données sources.
 
 ---
 
@@ -161,6 +164,9 @@ package "Générique" #EAEAF2 {
   [BC-10\nTrust & Safety] as BC10
   [BC-12\nCommunication] as BC12
 }
+package "Soutien — capacité interne" #E8F0E4 {
+  [BC-13\nCybersecurity\nOperations] as BC13
+}
 
 P --> BC10 : Signalements
 BC10 --> BC01 : MesuresDeSécurité
@@ -172,12 +178,20 @@ BC11 --> O : Statistiques et historique
 BC06 --> BC12 : BilletsÀDistribuer
 BC02 --> BC12 : ÉvénementsAnnulésOuReportés
 BC12 --> P : Communications
+BC01 --> BC13 : IdentitéEtHabilitations
+BC13 --> BC01 : DécisionDeRéponseCyber\n(humaine, autorisée)
+BC13 --> BC02 : DécisionDeRéponseCyber\n(humaine, autorisée)
 
 note bottom of BC11
   Reçoit également des "ÉvénementsMétier"
   de l'ensemble des composants des deux
   diagrammes — flèches individuelles
   omises pour la lisibilité.
+end note
+note bottom of BC13
+  Reçoit des signaux minimisés de sources autorisées
+  (les flèches entrantes sont omises).
+  Ne déclenche aucune mesure à partir d'une alerte seule.
 end note
 note bottom of BC10
   Reçoit également des "ÉlémentsDAnalyse"
@@ -250,9 +264,13 @@ end note
 | RemboursementsTraités | BC-09 | BC-08 | §6.2 « Reçoit de : BC-09 (remboursements traités) » |
 | MesuresDeSécurité | BC-10 | BC-01 | §7.1 « Reçoit de : BC-10 (mesures de sécurité) » |
 | DécisionsDeSécurité | BC-10 | BC-02 | §5.1 « Reçoit de : BC-10 (décisions de sécurité) » |
-| ÉvénementsDePrésence | BC-07 | BC-11 | §5.5 « Reçoit de : tous » ; relation nommée en §9.3 |
+| ÉvénementsDePrésence | BC-07 | BC-11 | §5.5 ; relation nommée en §9.3 |
 | BilletsÀDistribuer | BC-06 | BC-12 | §7.4 « Reçoit de : BC-06 (billets émis) » ; relation nommée en §9.3 |
 | ÉvénementsAnnulésOuReportés | BC-02 | BC-12 | §7.4 « Reçoit de : BC-02 (événements annulés ou reportés) » |
+| SignauxDeSécurité | BC-01 à BC-12 / sources autorisées | BC-13 | `context-map.md` §6.13 ; couverture des sources à valider |
+| IdentitéEtHabilitations | BC-01 | BC-13 | `context-map.md` §6.13 |
+| DécisionDeRéponseCyber | BC-13 | Module propriétaire de l'actif | `context-map.md` §6.13 ; après décision humaine habilitée |
+| RésultatDeRéponseCyber | Module propriétaire de l'actif | BC-13 | `context-map.md` §6.13 ; résultat exécuté ou refusé |
 
 Chaque interface nommée dans les diagrammes 1 et 2 a donc une ligne source vérifiable — aucune n'a été inventée pour les besoins de la mise en forme.
 
@@ -277,7 +295,7 @@ Un grain plus fin (un composant par agrégat, par exemple) romprait l'unité de 
 
 **Interface Segregation, sans POO :** chaque interface nommée dans ce document porte **une seule capacité** (`RéservationValide`, `PaiementConfirmé`...), jamais une interface fourre-tout du type `ServiceBC04`. C'est l'équivalent structurel du principe d'Interface Segregation (SOLID) : un composant consommateur ne dépend que de ce dont il a réellement besoin, jamais de la totalité des capacités d'un autre composant. Cette discipline n'a rien d'orienté objet — c'est une question de contrat entre systèmes, aussi valable pour des files de messages ou des appels HTTP que pour des interfaces de classes.
 
-**Sur la simplification des composants transversaux (BC-01, BC-10, BC-11) :** ces trois composants auraient nécessité, en toute rigueur, une flèche vers ou depuis chacun des neuf autres composants — soit vingt-sept flèches supplémentaires rien que pour eux. Les représenter comme des notes plutôt que comme un maillage complet est une décision de lisibilité, pas une perte d'information : la table de traçabilité (§7) et `bounded-contexts.md` restent la référence exhaustive.
+**Sur la simplification des composants transversaux (BC-01, BC-10, BC-11) :** leur représentation exhaustive sous forme de flèches rendrait les vues illisibles et pourrait suggérer des flux non retenus. Les représenter aussi par des notes est une décision de lisibilité, pas une perte d'information : la table de traçabilité (§7) et `bounded-contexts.md` restent les références ; les signaux cyber vers BC-13 sont minimisés et leurs sources restent à valider.
 
 ---
 
@@ -318,5 +336,5 @@ Un grain plus fin (un composant par agrégat, par exemple) romprait l'unité de 
 | Périmètre | MVP Eventix |
 | Marché | Cameroun |
 | Notation | PlantUML — UML 2.5 |
-| Composants couverts | 12/12 (`bounded-contexts.md`) |
+| Composants couverts | 13/13 (`bounded-contexts.md`) |
 | Diagramme suivant | `diagrammes-de-deploiement.md` |

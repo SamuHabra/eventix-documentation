@@ -42,6 +42,11 @@ Eventix couvre la gestion de la billetterie, notamment :
 
 - La mise en vente des billets.
 - La gestion des catégories ou types de billets.
+- La proposition de passes couvrant plusieurs dates d'un événement, avec un quota d'entrées contrôlé à chaque scan d'entrée.
+- La possibilité d'ajouter un don facultatif au paiement d'un billet, y compris pour un billet gratuit.
+- La billetterie hybride : billets distincts pour l'accès sur place ou à un contenu en direct / VOD, avec communication des droits d'accès en ligne.
+- Les codes promotionnels et les liens de suivi permettant d'attribuer et de mesurer les ventes issues des partenaires ou influenceurs.
+- La configuration d'un plan de salle interactif et la sélection/réservation d'une place numérotée lorsqu'un événement le prévoit.
 - Le suivi des ventes.
 - La gestion des billets des participants.
 - La validation des billets.
@@ -88,6 +93,7 @@ Eventix permet aux organisateurs d'obtenir des données utiles à l'analyse de l
 
 - Nombre de billets vendus.
 - Revenus générés.
+- Montants des dons, distingués des ventes de billets.
 - Taux de remplissage.
 - Nombre de participants.
 - Nombre de participants entrés.

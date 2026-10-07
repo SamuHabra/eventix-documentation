@@ -35,13 +35,13 @@
 
 ## 1. Objectif et portée
 
-Ce document traduit en diagrammes UML 2.5 les 26 Use Cases déjà rédigés et validés au niveau métier dans `use-cases.md`. Conformément au principe de **faible couplage documentaire** déjà posé par cette source (section 22 de `use-cases.md`), ce document :
+Ce document traduit en diagrammes UML 2.5 les 37 Use Cases déjà rédigés dans `use-cases.md`. Conformément au principe de **faible couplage documentaire** déjà posé par cette source (section 22 de `use-cases.md`), ce document :
 
 - **ne reformule pas** les scénarios nominaux, alternatifs ou d'exception — ils restent dans `use-cases.md` ;
 - **ne recopie pas** les règles métier (RM-xx) — elles restent dans `regles-metier.md` ;
 - **se concentre sur la structure relationnelle** : qui déclenche quoi, quelles inclusions/extensions sont réellement justifiées, comment organiser la lecture d'ensemble.
 
-Chaque cas d'usage est référencé par son identifiant global (`UC-001` … `UC-026`) sans réinvention : aucun identifiant n'est créé dans ce document, conformément à la convention établie.
+Chaque cas d'usage est référencé par son identifiant global (`UC-001` … `UC-037`) sans réinvention : aucun identifiant n'est créé dans ce document, conformément à la convention établie.
 
 ---
 
@@ -65,29 +65,31 @@ Conformément au principe 11 de `use-cases.md` ("les relations `include`/`extend
 
 | Acteur | Type | Rôle | Cas d'usage principaux |
 |---|---|---|---|
-| **Participant** | Primaire (humain) | Découvre, réserve/achète, récupère et utilise un billet | UC-001 à UC-004 |
-| **Organisateur** | Primaire (humain) | Crée, publie et gère ses événements ; suit son activité et ses finances | UC-005 à UC-013, UC-023 |
-| **Agent de contrôle** | Primaire (humain) | Contrôle les billets à l'entrée de l'événement | UC-014, UC-015 |
+| **Participant** | Primaire (humain) | Découvre, réserve/achète, récupère et utilise un billet ; peut ajouter un don, un code promotionnel, accéder au direct/VOD et choisir un siège | UC-001 à UC-004, UC-029, UC-032, UC-033, UC-036 |
+| **Organisateur** | Primaire (humain) | Crée, publie et gère ses événements ; configure accès hybrides, promotions et sièges ; suit ses ventes | UC-005 à UC-013, UC-023, UC-027, UC-030, UC-031, UC-033 à UC-035 |
+| **Agent de contrôle** | Primaire (humain) | Contrôle les billets à l'entrée de l'événement, dont les passes à quota | UC-014, UC-015, UC-028 |
 | **Administrateur** | Primaire (humain, interne) | Vérifie, analyse les risques et traite les situations sensibles | UC-016 à UC-020 |
-| **Prestataire de paiement** | Secondaire (système externe) | Traite les opérations de paiement et de reversement | UC-003, UC-021 |
+| **Analyste cybersécurité** | Primaire (humain, interne) | Consulte et qualifie les alertes de sécurité système | UC-037 |
+| **Responsable humain habilité** | Primaire (humain, interne) | Décide et trace les mesures de réponse à un incident cyber | UC-037 |
+| **Prestataire de paiement** | Secondaire (système externe) | Traite les opérations de paiement et de reversement | UC-003, UC-021, UC-029 |
 | **Horloge système** | Secondaire (système interne) | Déclenche les comportements liés au temps ou à un état atteint | UC-021, UC-022, UC-024 |
 
 > **Cohérence avec le diagramme de contexte :** l'acteur nommé « Modérateur Eventix (Trust & Safety) » dans la première version de `diagramme-de-contexte.md` a été renommé **Administrateur**, pour s'aligner sur la terminologie de `use-cases.md`, qui est la source la plus détaillée sur ce rôle. Le fichier de contexte a été corrigé en conséquence (image et code PlantUML régénérés).
 
 > **Sur l'acteur « Horloge système » :** cet acteur n'apparaît pas dans le diagramme de contexte, et c'est volontaire — voir la justification en section 12. Il est introduit ici uniquement parce que la notation UML exige qu'un cas d'usage autonome (non atteint par `include`/`extend`) ait au moins un acteur déclencheur, et que `use-cases.md` décrit explicitement des déclencheurs temporels ("expiration du délai", "l'événement est terminé") sans les rattacher à un acteur humain.
 
-> **Sur le déclencheur du signalement (UC-017) :** `use-cases.md` mentionne "un utilisateur signale un problème" comme déclencheur, sans Use Case dédié à l'acte de signalement lui-même. Plutôt que d'inventer un `UC-027` non présent dans la source, ce document modélise **Participant** et **Organisateur** comme acteurs secondaires déclencheurs de `UC-017`, ce qui reflète fidèlement la phrase source sans ajouter de portée. Voir clarification n°1.
+> **Sur le déclencheur du signalement (UC-017) :** `use-cases.md` mentionne "un utilisateur signale un problème" comme déclencheur, sans Use Case dédié à l'acte de signalement lui-même. Aucun Use Case distinct de signalement n'est donc modélisé. `UC-027` est utilisé dans `use-cases.md` pour configurer un pass multi-jours. Ce document modélise **Participant** et **Organisateur** comme acteurs secondaires déclencheurs de `UC-017`, ce qui reflète fidèlement la phrase source sans ajouter de portée. Voir clarification n°1.
 
 ---
 
 ## 4. Pourquoi plusieurs diagrammes plutôt qu'un seul
 
-Un diagramme unique regroupant les 26 Use Cases, 6 acteurs et 8 relations include/extend serait illisible et n'apporterait aucune valeur de compréhension — c'est le cas typique de sur-engineering que les exigences de ce dossier demandent d'éviter. La pratique RUP consiste à découper les vues de cas d'usage par **acteur principal / domaine métier cohérent**, chaque diagramme restant lisible sur un seul écran :
+Un diagramme unique regroupant les 37 Use Cases, 8 acteurs et 9 relations include/extend serait illisible et n'apporterait aucune valeur de compréhension — c'est le cas typique de sur-engineering que les exigences de ce dossier demandent d'éviter. La pratique RUP consiste à découper les vues de cas d'usage par **acteur principal / domaine métier cohérent**, chaque diagramme restant lisible sur un seul écran :
 
 1. Une **vue d'ensemble** (packages, sans détail include/extend) pour la navigation.
-2. Cinq **vues détaillées**, une par domaine, avec leurs relations internes.
+2. Six **vues détaillées**, une par domaine, avec leurs relations internes.
 
-Cette organisation reprend directement le découpage déjà utilisé dans `use-cases.md` (sections 7 à 13), ce qui garantit la traçabilité et évite toute réinterprétation du périmètre métier.
+Cette organisation reprend directement le découpage déjà utilisé dans `use-cases.md` (sections 7 à 13), ce qui garantit la traçabilité et évite toute réinterprétation du périmètre métier. La supervision cybersécurité dispose d'une vue séparée de l'administration Trust & Safety : leurs décisions et domaines ne sont pas fusionnés.
 
 ---
 
@@ -107,6 +109,8 @@ actor Participant as P
 actor Organisateur as O
 actor "Agent de\ncontrôle" as AG
 actor Administrateur as ADM
+actor "Analyste\ncybersécurité" as CSA
+actor "Responsable humain\nhabilité" as CSR
 actor "Prestataire de\npaiement" as PSP <<système externe>>
 actor "Horloge\nsystème" as CLK <<système>>
 
@@ -116,6 +120,10 @@ rectangle "Système Eventix" {
     usecase "UC-002\nObtenir un billet gratuit" as UC2
     usecase "UC-003\nAcheter un billet" as UC3
     usecase "UC-004\nRécupérer un billet" as UC4
+    usecase "UC-029\nAjouter un don à une commande" as UC29
+    usecase "UC-032\nAccéder à un direct / VOD" as UC32
+    usecase "UC-033\nAppliquer un code promotionnel" as UC33
+    usecase "UC-036\nChoisir une place numérotée" as UC36
   }
   package "Organisateur — Événements" as PKG2 {
     usecase "UC-005\nCréer et configurer" as UC5
@@ -126,14 +134,20 @@ rectangle "Système Eventix" {
     usecase "UC-010\nAnalyser performances" as UC10
     usecase "UC-011\nGérer le report" as UC11
     usecase "UC-012\nGérer l'annulation" as UC12
+    usecase "UC-027\nConfigurer un pass multi-jours" as UC27
+    usecase "UC-031\nConfigurer les accès hybrides" as UC31
+    usecase "UC-034\nSuivre les ventes par lien" as UC34
+    usecase "UC-035\nConfigurer un plan de salle" as UC35
   }
   package "Organisateur — Finance" as PKG3 {
     usecase "UC-013\nSuivre le règlement" as UC13
     usecase "UC-023\nEffectuer un retrait" as UC23
+    usecase "UC-030\nConfigurer les dons optionnels" as UC30
   }
   package "Contrôle d'accès" as PKG4 {
     usecase "UC-014\nContrôler un billet" as UC14
     usecase "UC-015\nContrôle multi-scanners" as UC15
+    usecase "UC-028\nContrôler une entrée avec un pass" as UC28
   }
   package "Administration & Trust and Safety" as PKG5 {
     usecase "UC-016\nVérifier organisateur / événement" as UC16
@@ -149,12 +163,19 @@ rectangle "Système Eventix" {
     usecase "UC-025\nÉmettre un billet" as UC25
     usecase "UC-026\nMAJ état billet après contrôle" as UC26
   }
+  package "Cybersécurité Eventix" as PKG7 {
+    usecase "UC-037\nSuperviser et traiter\nun incident cyber" as UC37
+  }
 }
 
 P --> UC1
 P --> UC2
 P --> UC3
 P --> UC4
+P --> UC29
+P --> UC32
+P --> UC33
+P --> UC36
 O --> UC5
 O --> UC6
 O --> UC7
@@ -163,16 +184,26 @@ O --> UC9
 O --> UC10
 O --> UC11
 O --> UC12
+O --> UC27
 O --> UC13
 O --> UC23
+O --> UC30
+O --> UC31
+O --> UC33
+O --> UC34
+O --> UC35
 AG --> UC14
 AG --> UC15
+AG --> UC28
 ADM --> UC16
 ADM --> UC17
 ADM --> UC18
 ADM --> UC19
 ADM --> UC20
+CSA --> UC37
+CSR --> UC37
 PSP --> UC3
+PSP --> UC29
 PSP --> UC21
 CLK --> UC21
 CLK --> UC22
@@ -200,6 +231,10 @@ rectangle "Système Eventix — Participant" {
   usecase "UC-002\nObtenir un billet gratuit" as UC2
   usecase "UC-003\nAcheter un billet" as UC3
   usecase "UC-004\nRécupérer un billet" as UC4
+  usecase "UC-029\nAjouter un don à une commande" as UC29
+  usecase "UC-032\nAccéder à un direct / VOD" as UC32
+  usecase "UC-033\nAppliquer un code promotionnel" as UC33
+  usecase "UC-036\nChoisir une place numérotée" as UC36
   usecase "UC-025\nÉmettre un billet" as UC25
 }
 
@@ -207,7 +242,12 @@ P --> UC1
 P --> UC2
 P --> UC3
 P --> UC4
+P --> UC29
+P --> UC32
+P --> UC33
+P --> UC36
 UC3 --> PSP
+UC29 --> PSP
 
 UC2 .down.> UC25 : <<include>>
 UC3 .down.> UC25 : <<include>>
@@ -245,7 +285,13 @@ rectangle "Système Eventix — Organisateur" {
   usecase "UC-010\nAnalyser les\nperformances" as UC10
   usecase "UC-011\nGérer le report" as UC11
   usecase "UC-012\nGérer l'annulation" as UC12
+  usecase "UC-027\nConfigurer un pass multi-jours" as UC27
+  usecase "UC-031\nConfigurer les accès hybrides" as UC31
+  usecase "UC-033\nCréer un code promotionnel" as UC33
+  usecase "UC-034\nCréer un lien de suivi" as UC34
+  usecase "UC-035\nConfigurer un plan de salle" as UC35
   usecase "UC-013\nSuivre le règlement" as UC13
+  usecase "UC-030\nConfigurer les dons optionnels" as UC30
   usecase "UC-023\nEffectuer un retrait" as UC23
   usecase "UC-020\nGérer un\nremboursement" as UC20
 }
@@ -258,7 +304,13 @@ O --> UC9
 O --> UC10
 O --> UC11
 O --> UC12
+O --> UC27
 O --> UC13
+O --> UC30
+O --> UC31
+O --> UC33
+O --> UC34
+O --> UC35
 O --> UC23
 
 UC20 .up.> UC12 : <<extend>>\n(billets vendus éligibles)
@@ -291,19 +343,22 @@ actor "Agent de\ncontrôle" as AG
 rectangle "Système Eventix — Contrôle d'accès" {
   usecase "UC-014\nContrôler un billet" as UC14
   usecase "UC-015\nContrôler avec\nplusieurs scanners" as UC15
+  usecase "UC-028\nContrôler une entrée avec un pass" as UC28
   usecase "UC-026\nMettre à jour l'état\ndu billet après contrôle" as UC26
 }
 
 AG --> UC14
 AG --> UC15
+AG --> UC28
 UC14 .down.> UC26 : <<include>>
 UC15 .down.> UC26 : <<include>>
+UC28 .down.> UC26 : <<include>>
 @enduml
 ```
 
 ![Cas d'usage Agent de contrôle](uc-agent-controle.png)
 
-**Lecture :** la mise à jour d'état (`UC-026`) est **systématiquement** exécutée dès qu'un contrôle réussit, que ce soit via un scanner unique (`UC-014`) ou via le mode multi-scanners (`UC-015`) — d'où `<<include>>` dans les deux cas.
+**Lecture :** la mise à jour d'état (`UC-026`) est **systématiquement** exécutée dès qu'un contrôle réussit, que ce soit via un scanner unique (`UC-014`), via le mode multi-scanners (`UC-015`) ou lors du contrôle d'un pass (`UC-028`) — d'où `<<include>>`.
 
 ---
 
@@ -345,7 +400,33 @@ UC18 .down.> UC17 : <<extend>>\n(risque confirmé)
 
 ---
 
-## 10. Diagramme détaillé — Comportements automatiques
+## 10. Diagramme détaillé — Supervision cybersécurité
+
+```plantuml
+@startuml uc-cybersecurite
+skinparam actorStyle awesome
+skinparam ArrowFontSize 11
+left to right direction
+
+actor "Analyste\ncybersécurité" as CSA
+actor "Responsable humain\nhabilité" as CSR
+
+rectangle "Système Eventix — Cybersécurité" {
+  usecase "UC-037\nSuperviser et traiter\nun incident cyber" as UC37
+}
+
+CSA --> UC37
+CSR --> UC37
+@enduml
+```
+
+![Cas d'usage de supervision cybersécurité](uc-cybersecurite.png)
+
+**Frontière :** UC-037 porte l'analyse des menaces contre le système Eventix. Il ne remplace pas les cas Trust & Safety (UC-016 à UC-020) relatifs à la fraude événementielle et aux mesures métier. Le responsable humain habilité décide des mesures ; aucune réponse de confinement n'est automatiquement déclenchée par l'alerte.
+
+---
+
+## 11. Diagramme détaillé — Comportements automatiques
 
 ```plantuml
 @startuml uc-automatismes
@@ -381,7 +462,7 @@ UC20 .up.> UC21 : <<extend>>\n(billet déjà attribué)
 
 ---
 
-## 11. Table des relations include / extend
+## 12. Table des relations include / extend
 
 | Relation | Type | Point d'extension / justification |
 |---|---|---|
@@ -389,6 +470,7 @@ UC20 .up.> UC21 : <<extend>>\n(billet déjà attribué)
 | `UC-003` → `UC-025` | `<<include>>` | L'émission de billet est systématique en cas de succès de l'achat payant |
 | `UC-014` → `UC-026` | `<<include>>` | La mise à jour d'état est systématique en cas de contrôle réussi |
 | `UC-015` → `UC-026` | `<<include>>` | Idem, en mode multi-scanners |
+| `UC-028` → `UC-026` | `<<include>>` | La consommation d'une entrée de pass fait partie de la mise à jour lors d'un contrôle réussi |
 | `UC-020` → `UC-012` | `<<extend>>` | Point d'extension : "billets déjà vendus éligibles" — conditionnel, pas systématique |
 | `UC-018` → `UC-017` | `<<extend>>` | Point d'extension : "risque confirmé" — conditionnel, pas systématique |
 | `UC-025` → `UC-021` | `<<extend>>` | Point d'extension : "billet encore disponible" — une des deux issues possibles |
@@ -398,7 +480,7 @@ Aucune autre relation `include`/`extend` n'a été introduite. Les enchaînement
 
 ---
 
-## 12. Note d'architecture
+## 13. Note d'architecture
 
 **Pourquoi les packages du diagramme ne sont pas les bounded contexts de `context-map.md` ?**
 Les packages de ce document regroupent les Use Cases par **acteur principal**, pas par bounded context. C'est un choix délibéré : le diagramme de cas d'usage répond à la question *"qui fait quoi ?"*, tandis que la carte des bounded contexts répond à *"quel sous-système porte quelle responsabilité ?"*. Un même Use Case peut ainsi traverser plusieurs BC en interne (`UC-003 Acheter un billet` touche BC-04, BC-05 et BC-06) sans que cela nuise à la lisibilité du diagramme de cas d'usage. Mélanger les deux grilles de lecture aurait produit un diagramme ambigu.
@@ -413,7 +495,7 @@ Trois options existaient : (1) ne pas modéliser d'acteur (viole la notation UML
 
 ---
 
-## 13. Cas limites et évolutivité
+## 14. Cas limites et évolutivité
 
 | Cas d'évolution futur | Impact sur ces diagrammes | Pourquoi la modélisation actuelle l'absorbe |
 |---|---|---|
@@ -425,7 +507,7 @@ Trois options existaient : (1) ne pas modéliser d'acteur (viole la notation UML
 
 ---
 
-## 14. Hypothèses retenues
+## 15. Hypothèses retenues
 
 1. **L'acteur « Administrateur »** couvre à la fois la vérification (UC-016), la modération (UC-017/UC-018/UC-019) et le traitement des remboursements (UC-020) — `use-cases.md` ne distingue pas de rôle "Support Finance" séparé du rôle "Trust & Safety" au MVP. Voir clarification n°3 si une séparation des droits est en réalité souhaitée.
 2. **Le signalement (déclencheur de UC-017)** est représenté comme une action secondaire du Participant et de l'Organisateur, sans Use Case dédié, faute d'un tel Use Case dans la source.
@@ -434,7 +516,7 @@ Trois options existaient : (1) ne pas modéliser d'acteur (viole la notation UML
 
 ---
 
-## 15. Points à clarifier avec le client / product owner
+## 16. Points à clarifier avec le client / product owner
 
 | # | Question | Pourquoi c'est important |
 |---|---|---|
@@ -447,7 +529,7 @@ Trois options existaient : (1) ne pas modéliser d'acteur (viole la notation UML
 
 ---
 
-## 16. Statut
+## 17. Statut
 
 | Champ | Valeur |
 |---|---|
@@ -457,5 +539,5 @@ Trois options existaient : (1) ne pas modéliser d'acteur (viole la notation UML
 | Périmètre | MVP Eventix |
 | Marché | Cameroun |
 | Notation | PlantUML — UML 2.5 |
-| Use Cases couverts | UC-001 à UC-026 (26/26) |
+| Use Cases couverts | UC-001 à UC-037 (37/37) |
 | Diagramme suivant | `diagrammes-de-classes.md` |

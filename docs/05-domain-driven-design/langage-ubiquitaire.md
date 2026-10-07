@@ -44,7 +44,7 @@ Il ne redéfinit pas les termes du glossaire métier ni les frontières des boun
 Ce document est dérivé principalement de :
 
 - `03-decouverte-du-metier/glossaire-metier.md` — vocabulaire métier officiel
-- `05-domain-driven-design/bounded-contexts.md` — frontières des douze bounded contexts
+- `05-domain-driven-design/bounded-contexts.md` — frontières des treize bounded contexts
 
 Toute définition, frontière ou classification mentionnée implicitement renvoie à ces documents sources.
 
@@ -125,6 +125,10 @@ Le langage ubiquitaire est utilisé de manière identique par tous les membres d
 | **Catégorie de billet** | Type de billet commercialisé pour un événement | BC-04, BC-06 |
 | **Place** | Emplacement physique auquel un billet donne accès | — |
 | **Place numérotée** | Place identifiée individuellement par un numéro | — |
+| **Plan de salle** | Représentation interactive des places, zones et de leur état de disponibilité | BC-03, BC-04 |
+| **Mode d'accès** | Droit d'accès associé à un billet : sur place, direct ou VOD | BC-06, BC-12 |
+| **Code promotionnel** | Code permettant d'appliquer une réduction à une commande selon des conditions définies | BC-05, BC-06 |
+| **Lien de suivi** | Lien partageable qui associe une visite ou une commande à une source de promotion | BC-11 |
 | **Disponibilité** | Quantité ou ensemble de places pouvant encore être attribuées | BC-03, BC-04 |
 | **Inventaire** | Ensemble des disponibilités gérées par Eventix | BC-04 |
 | **Historique de configuration** | Trace non réécrite des opérations de configuration | BC-11 |
@@ -403,6 +407,32 @@ Le langage ubiquitaire est utilisé de manière identique par tous les membres d
 | Newsletter | Information participant | La newsletter est un concept marketing, pas métier |
 
 ---
+
+## 4.13. BC-13 — Cybersecurity Operations
+
+### Termes définis dans ce contexte
+
+| Terme | Signification dans ce contexte | Contextes emprunteurs |
+|---|---|---|
+| **Signal de sécurité** | Fait technique observé, transmis par une source autorisée et contextualisé avec une provenance | Tous les BC sources |
+| **Alerte cybersécurité** | Signal ou groupe de signaux demandant un examen humain | — |
+| **Incident cybersécurité** | Dossier d'investigation regroupant alertes, constats et qualification | BC-01 à BC-12 pour les références d'actifs |
+| **Qualification** | Conclusion documentée : confirmé, faux positif ou non concluant | — |
+| **Décision de réponse cyber** | Décision humaine, habilitée, justifiée et traçable portant sur une réponse au système | Module propriétaire de l'actif |
+| **Couverture de détection** | Sources et périodes pour lesquelles des signaux sont effectivement disponibles | — |
+
+### Termes à ne pas confondre
+
+| Terme | Frontière |
+|---|---|
+| **Signalement métier** | Relève de BC-10 Trust & Safety ; ce n'est pas une alerte cyber |
+| **Mesure de sécurité métier** | Décision de BC-10, par exemple une restriction d'organisation ; elle n'est pas une décision cyber |
+| **Événement métier / statistique** | Relève de BC-11 ; ne remplace ni les signaux techniques ni le journal d'audit de BC-13 |
+| **Alerte** | N'est pas, à elle seule, la preuve qu'une attaque est confirmée |
+
+### Règle de langage
+
+Éviter « Eventix est sûr car aucune alerte n'est affichée ». Décrire la couverture des sources et leurs limites ; l'absence de signal reçu ne prouve pas l'absence d'attaque.
 
 # 5. Termes transversaux
 

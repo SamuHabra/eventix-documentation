@@ -290,6 +290,21 @@ Les événements de domaine matérialisent les transitions d'état qui dépassen
 
 ---
 
+## 5.12. BC-13 — Cybersecurity Operations
+
+| Événement | Déclencheur | Charge utile minimale | Consommateurs |
+|---|---|---|---|
+| `SignalDeSécuritéReçu` | Ingestion d'un fait d'une source approuvée | Référence de signal, source, horodatage, catégorie | Agrégat Alerte cybersécurité |
+| `AlerteCyberCréée` | Un signal satisfait une règle de détection configurée | Référence alerte, catégorie, sévérité estimée, horodatage | Analyste cybersécurité |
+| `AlerteCyberQualifiée` | Triage humain documenté | Référence alerte, qualification, justification, acteur habilité | Agrégat Incident cybersécurité |
+| `IncidentCyberOuvert` | Alerte ou signaux justifient une investigation | Référence incident, références d'alertes | Responsable de suivi habilité |
+| `IncidentCyberQualifié` | Conclusion humaine documentée | Référence incident, état, justification | Responsable humain habilité |
+| `DécisionDeRéponseCyberConsignée` | Responsable habilité approuve une réponse | Référence incident, décideur, mesure, portée, motif | Module propriétaire de l'actif, via contrat autorisé |
+| `RésultatDeRéponseCyberReçu` | Module propriétaire exécute ou refuse la mesure demandée | Référence décision, résultat, horodatage | Agrégat Incident cybersécurité |
+| `IncidentCyberClôturé` | Suivi terminé selon la procédure validée | Référence incident, état final, date | Responsable de sécurité habilité |
+
+Ces événements représentent des faits, pas des commandes automatiques. Une alerte ne produit pas directement `DécisionDeRéponseCyberConsignée` ; cet événement est émis seulement après une décision humaine habilitée. Le propriétaire de l'actif valide et applique sa propre transition.
+
 # 6. Événements par service de domaine
 
 ## 6.1. ServiceDeVérificationEvenementielle
@@ -414,11 +429,12 @@ Les événements de domaine matérialisent les transitions d'état qui dépassen
 | `MesureDeSécuritéDécidée` | BC-01 | Application sur comptes et organisations |
 | `MesureDeSécuritéDécidée` | BC-02 | Application sur événements |
 
-## 7.2. Consommateur universel
+## 7.2. Consommation transverse et périmètre cyber
 
 | Événement | Consommateur | Usage |
 |---|---|---|
-| Tous les événements | BC-11 | Enregistrement dans l'Historique et l'Événement métier |
+| Faits métier autorisés de BC-01 à BC-12 | BC-11 | Statistiques et historique, selon les contrats définis |
+| Signaux, alertes, incidents et décisions de BC-13 | BC-13 et destinataires explicitement indiqués au §5.12 | Pas de consommation universelle par BC-11 ; les indicateurs agrégés non sensibles nécessitent un contrat distinct validé |
 
 ---
 
@@ -444,10 +460,11 @@ ContrôleEffectué
 PrésenceEnregistrée
     ↓
 BilletUtilisé
+```
 
+## 8.2. Parcours organisateur complet
 
-8.2. Parcours organisateur complet
-Text
+```text
 CompteOrganisateurAutorisé
     ↓
 ÉvénementCréé
@@ -469,8 +486,11 @@ ClôtureEffectuée
 SoldeAlimenté
     ↓
 RetraitEffectué
-8.3. Flux de réconciliation
-Text
+```
+
+## 8.3. Flux de réconciliation
+
+```text
 RéservationExpirée
     ↓
 PaiementConfirmé (tardif)
@@ -480,10 +500,13 @@ RéconciliationDébutée
 RéconciliationConclue
     ↓
 BilletÉmis (si disponibilité)
-    ou
+ou
 ObligationDeRemboursementCréée (si indisponibilité)
-8.4. Flux de sécurité
-Text
+```
+
+## 8.4. Flux de sécurité métier
+
+```text
 SignalementReçu
     ↓
 MesureDeSécuritéDécidée
@@ -491,31 +514,62 @@ MesureDeSécuritéDécidée
 MesureDeSécuritéAppliquée
     ↓
 ÉvénementAnnulé (si mesure d'annulation)
-    ou
+ou
 OrganisationSuspendue (si mesure de suspension)
-9. Résumé
-Ce document identifie soixante-dix-sept événements de domaine produits par les seize agrégats et les dix services de domaine d'Eventix. Chaque événement possède un nom au passé, une charge utile minimale, un producteur unique et des consommateurs identifiés. Les événements matérialisent les transitions d'état qui dépassent une frontière d'agrégat et alimentent la traçabilité exigée par les processus métier. Ce document constitue la base pour la définition des politiques de cohérence et des mécanismes de communication inter-contextes dans les phases ultérieures.
-10. Critères de qualité du document
+```
+
+## 8.5. Flux de supervision cybersécurité
+
+```text
+SignalDeSécuritéReçu
+    ↓
+AlerteCyberCréée
+    ↓
+AlerteCyberQualifiée (triage humain)
+    ↓
+IncidentCyberOuvert
+    ↓
+IncidentCyberQualifié
+    ↓
+DécisionDeRéponseCyberConsignée (décision humaine habilitée)
+    ↓
+RésultatDeRéponseCyberReçu (module propriétaire)
+    ↓
+IncidentCyberClôturé
+```
+
+Cette séquence représente le flux type ; elle ne signifie pas que toute alerte devient un incident ou qu'une mesure est toujours décidée. Les embranchements restent soumis à l'analyse humaine et au contrat avec le module propriétaire de l'actif.
+
+# 9. Résumé
+
+Ce document identifie les événements de domaine des treize bounded contexts, dont huit événements cyber ajoutés pour les transitions d'alerte et d'incident. Chaque événement possède un nom au passé, une charge utile minimale, un producteur unique et des consommateurs identifiés. Les événements matérialisent les transitions d'état qui dépassent une frontière d'agrégat et alimentent la traçabilité exigée par les processus métier. Les événements cyber ne sont pas transmis universellement à BC-11 ; tout indicateur agrégé partagé avec l'analytique nécessite un contrat séparé validé.
+
+# 10. Critères de qualité du document
+
 Ce document doit respecter les propriétés suivantes :
-chaque événement possède un nom au passé composé en termes du langage ubiquitaire ;
-chaque événement possède un producteur unique ;
-la charge utile est minimale et justifiée ;
-les consommateurs sont identifiés pour chaque événement ;
-aucune définition d'agrégat ou de service n'est reprise des documents sources ;
-aucune décision technique n'est prise ou implicite.
-11. Statut
-Table
-Champ	Valeur
-Document	evenements-de-domaine.md
-Version	1.0
-Statut	À valider par l'équipe
-Périmètre	MVP Eventix
-Marché	Cameroun
-Table
-Principe	État
-Nommage au passé composé	✅ APPLIQUÉ
-Producteur unique	✅ APPLIQUÉ
-Charge utile minimale	✅ APPLIQUÉ
-Consommateurs identifiés	✅ DÉFINIS
-Cohérence avec les sources	✅ RESPECTÉE
-Décisions techniques	⏳ NON PRÉJUGÉES
+
+- chaque événement possède un nom au passé composé en termes du langage ubiquitaire ;
+- chaque événement possède un producteur unique ;
+- la charge utile est minimale et justifiée ;
+- les consommateurs sont identifiés pour chaque événement ;
+- aucune définition d'agrégat ou de service n'est reprise des documents sources ;
+- aucune décision technique n'est prise ou implicite.
+
+# 11. Statut
+
+| Champ | Valeur |
+|---|---|
+| **Document** | `evenements-de-domaine.md` |
+| **Version** | 1.0 |
+| **Statut** | À valider par l'équipe |
+| **Périmètre** | MVP Eventix |
+| **Marché** | Cameroun |
+
+| Principe | État |
+|---|---|
+| Nommage au passé composé | ✅ APPLIQUÉ |
+| Producteur unique | ✅ APPLIQUÉ |
+| Charge utile minimale | ✅ APPLIQUÉE |
+| Consommateurs identifiés | ✅ DÉFINIS |
+| Cohérence avec les sources | ✅ RESPECTÉE |
+| Décisions techniques | ⏳ NON PRÉJUGÉES |

@@ -29,7 +29,7 @@
 13. [Clôture (BC-08)](#13-clôture-bc-08)
 14. [Retrait (BC-08)](#14-retrait-bc-08)
 15. [Remboursement (BC-09)](#15-remboursement-bc-09)
-16. [Mesure de sécurité (BC-10)](#16-mesure-de-sécurité-bc-10)
+16. [Mesure de sécurité et cybersécurité (BC-10, BC-13)](#16-mesure-de-sécurité-et-cybersécurité-bc-10-bc-13)
 17. [Table d'exclusion](#17-table-dexclusion)
 18. [Table de couverture des événements](#18-table-de-couverture-des-événements)
 19. [Incohérences détectées dans les sources](#19-incohérences-détectées-dans-les-sources)
@@ -46,7 +46,7 @@
 Ce document montre les transitions d'état des agrégats et entités d'Eventix, **chacune déclenchée par un événement de domaine nommé**. Il croise deux sources déjà stables :
 
 - `agregats.md` — les frontières de cohérence et les attributs d'état (`ÉtatÉvénement`, `ÉtatBillet`, etc.) déjà repris dans `diagrammes-de-classes.md` ;
-- `evenements-de-domaine.md` — le catalogue des 77 événements, chacun avec un nom au passé, un déclencheur et une charge utile.
+- `evenements-de-domaine.md` — le catalogue des événements, chacun avec un nom au passé, un déclencheur et une charge utile.
 
 **Règle de construction stricte :** chaque flèche de transition porte, comme étiquette, le nom **exact** d'un événement du catalogue (entre guillemets simples inversés, comme dans la source). Aucune transition n'est inventée ; si un état plausible n'a pas d'événement documenté pour y entrer ou en sortir, ce document le signale comme un manque plutôt que de combler le vide par une supposition silencieuse.
 
@@ -69,7 +69,7 @@ Ce document montre les transitions d'état des agrégats et entités d'Eventix, 
 
 ## 3. Critère de sélection — qui reçoit un diagramme, et pourquoi
 
-Un agrégat ou une entité reçoit un diagramme d'état seulement si `evenements-de-domaine.md` documente **au moins deux événements distincts** modifiant son état — en dessous de ce seuil, un diagramme n'apporterait aucune information au-delà d'une seule ligne de texte. Ce choix reprend directement la discipline "allégé" déjà appliquée à `diagrammes-de-classes.md`. Treize éléments franchissent ce seuil ; les autres sont listés et justifiés en section 17 plutôt que silencieusement omis.
+Un agrégat ou une entité reçoit un diagramme d'état seulement si `evenements-de-domaine.md` documente **au moins deux événements distincts** modifiant son état — en dessous de ce seuil, un diagramme n'apporterait aucune information au-delà d'une seule ligne de texte. Ce choix reprend directement la discipline "allégé" déjà appliquée à `diagrammes-de-classes.md`. Quinze éléments franchissent ce seuil, dont les agrégats d'alerte et d'incident cybersécurité ; les autres sont listés et justifiés en section 17 plutôt que silencieusement omis.
 
 ---
 
@@ -349,7 +349,7 @@ EFFECTUÉ --> [*]
 
 ---
 
-## 16. Mesure de sécurité (BC-10)
+## 16. Mesure de sécurité et cybersécurité (BC-10, BC-13)
 
 ```plantuml
 @startuml etat-mesure-securite
@@ -363,6 +363,47 @@ APPLIQUÉE --> [*]
 ![État de la Mesure de sécurité](etat-mesure-securite.png)
 
 **Lecture :** correspond exactement à `SEQ-09` de `diagrammes-de-sequence.md` — la mesure est d'abord enregistrée (`DÉCIDÉE`), puis effectivement appliquée à sa cible (`APPLIQUÉE`).
+
+### 16.1. Alerte cybersécurité (BC-13)
+
+```plantuml
+@startuml etat-alerte-cyber
+skinparam ArrowFontSize 11
+skinparam StateFontSize 12
+[*] --> SIGNAL_REÇU : `SignalDeSécuritéReçu`
+SIGNAL_REÇU --> OUVERTE : `AlerteCyberCréée`
+OUVERTE --> QUALIFIÉE : `AlerteCyberQualifiée`
+note right of QUALIFIÉE
+  « Qualifiée » signifie qu'un triage humain
+  a été documenté ; cela ne confirme pas
+  automatiquement une attaque.
+end note
+@enduml
+```
+
+**Lecture :** une alerte est créée à partir d'un signal reçu et n'est qualifiée qu'après triage humain. Le catalogue ne définit pas d'événement de clôture ou de rejet d'alerte ; aucun état terminal supplémentaire n'est donc inventé.
+
+### 16.2. Incident cybersécurité (BC-13)
+
+```plantuml
+@startuml etat-incident-cyber
+skinparam ArrowFontSize 11
+skinparam StateFontSize 12
+[*] --> OUVERT : `IncidentCyberOuvert`
+OUVERT --> QUALIFIÉ : `IncidentCyberQualifié`
+QUALIFIÉ --> RÉPONSE_DÉCIDÉE : `DécisionDeRéponseCyberConsignée`
+RÉPONSE_DÉCIDÉE --> RÉSULTAT_REÇU : `RésultatDeRéponseCyberReçu`
+RÉSULTAT_REÇU --> CLOS : `IncidentCyberClôturé`
+CLOS --> [*]
+note right of RÉPONSE_DÉCIDÉE
+  La décision est humaine et habilitée.
+  Le module propriétaire de l'actif
+  décide et exécute sa propre transition.
+end note
+@enduml
+```
+
+**Lecture :** les transitions distinguent qualification, décision, résultat renvoyé par le propriétaire de l'actif et clôture. Une alerte seule ne déclenche pas de réponse automatique.
 
 ---
 
@@ -384,11 +425,11 @@ APPLIQUÉE --> [*]
 
 ## 18. Table de couverture des événements
 
-Sur les 77 événements annoncés par le résumé de `evenements-de-domaine.md`, cette section vérifie qu'aucun événement pertinent à une transition d'état n'a été oublié :
+Cette section vérifie qu'aucun événement pertinent à une transition d'état du catalogue de `evenements-de-domaine.md` n'a été oublié :
 
 | Catégorie d'événement | Couvert par un diagramme d'état ? |
 |---|---|
-| Événements d'agrégat (§5, BC-01 à BC-12) | ✅ Tous les événements de transition sont repris dans les 13 diagrammes ou listés en exclusion (§17) avec justification |
+| Événements d'agrégat (§5, BC-01 à BC-13) | ✅ Tous les événements de transition sont repris dans les 15 diagrammes ou listés en exclusion (§17) avec justification |
 | Événements de service (§6) | ⚠️ Non repris directement — ils décrivent le déroulement d'un service (déjà couvert par `diagrammes-de-sequence.md`), pas la transition d'un agrégat. Exception : les événements de service qui doublonnent un événement d'agrégat sont signalés en incohérence (§19) |
 | Événements purement journalisés (consommés uniquement par BC-11) | ✅ Explicitement exclus quand ils ne portent aucune transition d'état propre (ex. `UtilisateurAuthentifié`) |
 
@@ -398,8 +439,8 @@ Sur les 77 événements annoncés par le résumé de `evenements-de-domaine.md`,
 
 1. **Double nommage pour la Réconciliation :** `evenements-de-domaine.md` §5.4 nomme les événements de l'agrégat `RéconciliationDéclenchée` / `RéconciliationRésolue`, tandis que §6.4 (côté service) nomme des moments très proches `RéconciliationDébutée` / `RéconciliationConclue`. La règle E4 (« un événement est produit par une seule source ») est ambiguë ici : soit ce sont quatre événements distincts (le service en émet deux, l'agrégat en émet deux autres, à des instants légèrement différents), soit il s'agit d'une duplication de nommage pour le même fait. Ce document a retenu les noms de §5.4 (niveau agrégat), cohérents avec le principe que ce diagramme modélise les transitions de l'agrégat.
 2. **Faute de frappe :** l'événement `ExpirationTraitéee` (§6.2) comporte une lettre en trop. À corriger dans `evenements-de-domaine.md`.
-3. **Décompte des agrégats :** le résumé de `evenements-de-domaine.md` reprend le chiffre de « seize agrégats », déjà signalé comme incohérent avec le décompte détaillé de vingt dans `diagrammes-de-classes.md` §14. Cette incohérence se propage donc d'un document à l'autre.
-4. **Formatage Markdown dégradé en fin de fichier source :** à partir de la section 8.2, `evenements-de-domaine.md` perd son formatage (blocs `text` non fermés, titres sans `#`), rendant la lecture des flux transversaux 8.2 à 8.4 plus difficile. Sans incidence sur le contenu extrait ici, mais à corriger pour la lisibilité du document source.
+3. **Décompte des agrégats :** l'écart antérieur entre le résumé et le décompte détaillé est corrigé dans `agregats.md`, qui annonce désormais 22 agrégats, BC-13 inclus.
+4. **Formatage Markdown des flux transversaux :** les sections 8.2 à 8.5 de `evenements-de-domaine.md` ont été remises en forme pendant la synchronisation.
 
 ---
 

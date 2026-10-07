@@ -155,6 +155,22 @@ Certains membres pourront éventuellement utiliser Eventix dans le futur avec de
 
 **Statut :** Acteur métier — intégration progressive
 
+### 4.4. Analyste cybersécurité Eventix
+
+L'analyste cybersécurité est un acteur interne chargé de consulter les signaux et alertes relatifs à la sécurité du système Eventix, d'analyser les incidents potentiels et de transmettre ses constats au responsable habilité.
+
+Il peut notamment :
+
+- consulter le tableau de bord de supervision cybersécurité ;
+- examiner les alertes et éléments de contexte qui lui sont accessibles ;
+- qualifier un signal comme suspect, confirmé, faux positif ou à investiguer ;
+- ouvrir et mettre à jour un dossier d'incident ;
+- recommander une mesure de protection et en suivre l'escalade.
+
+Dans le périmètre retenu, l'analyste ne déclenche pas automatiquement une mesure de confinement. Un responsable humain habilité décide et autorise les mesures ; les responsabilités exactes et éventuels rôles distincts restent à préciser.
+
+**Statut :** Acteur interne — capacité prévue au MVP, habilitations à préciser
+
 ## 5. Acteurs de l'écosystème événementiel
 
 ### 5.1. Artiste / Intervenant
@@ -357,6 +373,7 @@ Il est néanmoins identifié dans le modèle métier afin que ses menaces soient
 | Organisateur | Principal | Oui | Oui |
 | Participant | Principal | Oui | Oui |
 | Agent de contrôle | Opérationnel | Oui | Oui |
+| Analyste cybersécurité Eventix | Interne | Oui | Oui |
 | Agent de vente | Opérationnel | Non | Oui |
 | Équipe opérationnelle | Opérationnel | Partiel | Oui |
 | Artiste / Intervenant | Écosystème | Non | Possible |
